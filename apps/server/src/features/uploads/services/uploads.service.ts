@@ -1,6 +1,7 @@
 import { randomUUID } from "node:crypto"
 
 import { Inject, Injectable } from "@nestjs/common"
+import { ConfigService } from "@nestjs/config"
 import {
   ALLOWED_IMAGE_MIME_TYPES,
   type AllowedImageMimeType,
@@ -13,6 +14,7 @@ import type {
   PresignUploadResponse,
 } from "@workspace/shared/upload"
 
+import { ENV_KEYS, type AppEnv } from "../../../common/config/env.types.js"
 import { throwBadRequest } from "../../../common/errors/error-response.js"
 import { UploadSession } from "../entities/upload-session.entity.js"
 import { UploadedImage } from "../entities/uploaded-image.entity.js"
@@ -25,7 +27,8 @@ import {
 export class UploadsService {
   constructor(
     @Inject(UPLOADS_REPOSITORY)
-    private readonly uploadsRepository: UploadsRepository
+    private readonly uploadsRepository: UploadsRepository,
+    private readonly configService: ConfigService<AppEnv, true>
   ) {}
 
   createPresignedUpload(payload: PresignUploadRequest): PresignUploadResponse {
@@ -161,13 +164,7 @@ export class UploadsService {
   }
 
   private getServerPublicOrigin(): string {
-    const origin = process.env.SERVER_PUBLIC_ORIGIN?.trim()
-
-    if (!origin) {
-      throwBadRequest("SERVER_PUBLIC_ORIGIN 환경변수를 찾을 수 없습니다.")
-    }
-
-    return origin
+    return this.configService.getOrThrow<string>(ENV_KEYS.SERVER_PUBLIC_ORIGIN)
   }
 
   private runRepository<T>(runner: () => T): T {
