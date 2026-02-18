@@ -32,6 +32,14 @@
     "./blog": {
       "types": "./dist/blog/index.d.ts",
       "import": "./dist/blog/index.js"
+    },
+    "./common": {
+      "types": "./dist/common/index.d.ts",
+      "import": "./dist/common/index.js"
+    },
+    "./upload": {
+      "types": "./dist/upload/index.d.ts",
+      "import": "./dist/upload/index.js"
     }
   }
 }

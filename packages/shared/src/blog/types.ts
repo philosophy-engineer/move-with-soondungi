@@ -1,16 +1,13 @@
 import type { z } from "zod"
 
+import { ALLOWED_IMAGE_MIME_TYPES } from "./constants.js"
 import type {
-  completeUploadRequestSchema,
-  completeUploadResponseSchema,
   draftPostRequestSchema,
   jsonContentSchema,
   listPostsResponseSchema,
   postSaveResponseSchema,
   postStatusSchema,
   postSummarySchema,
-  presignUploadRequestSchema,
-  presignUploadResponseSchema,
   publishPostRequestSchema,
 } from "./schemas.js"
 
@@ -23,9 +20,4 @@ export type PostSaveResponse = z.infer<typeof postSaveResponseSchema>
 export type PostSummary = z.infer<typeof postSummarySchema>
 export type ListPostsResponse = z.infer<typeof listPostsResponseSchema>
 
-export type PresignUploadRequest = z.infer<typeof presignUploadRequestSchema>
-export type PresignUploadResponse = z.infer<typeof presignUploadResponseSchema>
-export type CompleteUploadRequest = z.infer<typeof completeUploadRequestSchema>
-export type CompleteUploadResponse = z.infer<typeof completeUploadResponseSchema>
-
-export type AllowedImageMimeType = PresignUploadRequest["mimeType"]
+export type AllowedImageMimeType = (typeof ALLOWED_IMAGE_MIME_TYPES)[number]

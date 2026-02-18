@@ -1,7 +1,5 @@
 import { z } from "zod"
 
-import { ALLOWED_IMAGE_MIME_TYPES } from "./constants.js"
-
 export const postStatusSchema = z.enum(["DRAFT", "PUBLISHED"])
 
 export const jsonContentSchema: z.ZodType<{
@@ -48,31 +46,4 @@ export const postSummarySchema = z.object({
 
 export const listPostsResponseSchema = z.object({
   items: z.array(postSummarySchema),
-})
-
-export const presignUploadRequestSchema = z.object({
-  filename: z.string(),
-  mimeType: z.enum(ALLOWED_IMAGE_MIME_TYPES),
-  size: z.number(),
-})
-
-export const presignUploadResponseSchema = z.object({
-  fileKey: z.string(),
-  uploadUrl: z.string(),
-  completeToken: z.string(),
-  expiresAt: z.string(),
-})
-
-export const completeUploadRequestSchema = z.object({
-  fileKey: z.string(),
-  completeToken: z.string(),
-})
-
-export const completeUploadResponseSchema = z.object({
-  imageId: z.string(),
-  url: z.string(),
-})
-
-export const errorResponseSchema = z.object({
-  message: z.string(),
 })
