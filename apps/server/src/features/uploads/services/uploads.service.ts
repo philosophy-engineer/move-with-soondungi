@@ -1,5 +1,3 @@
-import { randomUUID } from "node:crypto";
-
 import { Inject, Injectable } from "@nestjs/common";
 import {
   ALLOWED_IMAGE_MIME_TYPES,
@@ -14,16 +12,17 @@ import type {
 } from "@workspace/shared/upload";
 
 import { throwBadRequest } from "../../../common/errors/error-response.js";
+import { PRESIGNED_UPLOAD_EXPIRES_IN_SECONDS } from "../constants/uploads.constants.js";
 import { UploadSession } from "../entities/upload-session.entity.js";
 import { UploadedImage } from "../entities/uploaded-image.entity.js";
 import { UPLOADS_REPOSITORY, type UploadsRepository } from "../repositories/uploads.repository.js";
 import { UploadsS3Repository } from "../repositories/uploads.s3.repository.js";
-
-const PRESIGNED_UPLOAD_EXPIRES_IN_SECONDS = 10 * 60;
-
-function sanitizeFilename(filename: string): string {
-  return filename.replace(/[^a-zA-Z0-9._-]/g, "_");
-}
+import {
+  buildUploadObjectKey,
+  createUploadedImageId,
+  createUploadCompleteToken,
+  createUploadFileKey,
+} from "../utils/upload-keys.js";
 
 @Injectable()
 export class UploadsService {
@@ -36,9 +35,9 @@ export class UploadsService {
   async createPresignedUpload(payload: PresignUploadRequest): Promise<PresignUploadResponse> {
     this.validateImageUploadPolicy(payload);
 
-    const fileKey = `file_${randomUUID()}`;
-    const completeToken = `token_${randomUUID()}`;
-    const objectKey = `uploads/${fileKey}_${sanitizeFilename(payload.filename)}`;
+    const fileKey = createUploadFileKey();
+    const completeToken = createUploadCompleteToken();
+    const objectKey = buildUploadObjectKey(fileKey, payload.filename);
     const expiresAtMs = Date.now() + PRESIGNED_UPLOAD_EXPIRES_IN_SECONDS * 1000;
     const expiresAt = new Date(expiresAtMs).toISOString();
 
@@ -116,7 +115,7 @@ export class UploadsService {
     }
 
     const image = new UploadedImage({
-      imageId: `img_${randomUUID()}`,
+      imageId: createUploadedImageId(),
       fileKey: session.fileKey,
       objectKey: session.objectKey,
       mimeType: session.mimeType,
