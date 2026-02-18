@@ -3,6 +3,16 @@ import type { z } from "zod";
 
 const DEV_DEFAULT_API_BASE_URL = "http://localhost:4000";
 
+export class HttpRequestError extends Error {
+  readonly status: number;
+
+  constructor(message: string, status: number) {
+    super(message);
+    this.name = "HttpRequestError";
+    this.status = status;
+  }
+}
+
 function getApiBaseUrl(): string {
   const configured = process.env.NEXT_PUBLIC_API_BASE_URL?.trim();
 
@@ -38,7 +48,7 @@ export async function getJson<TSchema extends z.ZodType>(
   });
 
   if (!response.ok) {
-    throw new Error(await readErrorMessage(response));
+    throw new HttpRequestError(await readErrorMessage(response), response.status);
   }
 
   const raw = (await response.json()) as unknown;
@@ -62,7 +72,7 @@ export async function postJson<TSchema extends z.ZodType>(
   });
 
   if (!response.ok) {
-    throw new Error(await readErrorMessage(response));
+    throw new HttpRequestError(await readErrorMessage(response), response.status);
   }
 
   const raw = (await response.json()) as unknown;

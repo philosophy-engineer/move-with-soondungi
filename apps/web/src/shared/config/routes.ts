@@ -13,6 +13,7 @@ export function getPostDetailRoute(slug: string): string {
 
 export const apiRoutes = {
   posts: "/api/posts",
+  postDetail: (slug: string) => `/api/posts/${encodeURIComponent(slug)}`,
   authLogin: "/api/auth/login",
   authMe: "/api/auth/me",
   authLogout: "/api/auth/logout",

@@ -4,20 +4,11 @@ import Image from "next/image";
 import type { PostFeedItem } from "@workspace/shared/blog";
 
 import { getPostDetailRoute } from "@/src/shared/config/routes";
+import { formatDateKoYmd } from "@/src/shared/lib/date";
 
 type PostFeedItemProps = {
   item: PostFeedItem;
 };
-
-function formatDateKo(value: string): string {
-  const date = new Date(value);
-
-  if (Number.isNaN(date.getTime())) {
-    return value;
-  }
-
-  return `${date.getFullYear()}년 ${date.getMonth() + 1}월 ${date.getDate()}일`;
-}
 
 export function PostFeedItemCard({ item }: PostFeedItemProps) {
   return (
@@ -43,7 +34,7 @@ export function PostFeedItemCard({ item }: PostFeedItemProps) {
         <p className="mb-5 text-lg leading-relaxed text-zinc-600 [display:-webkit-box] [-webkit-box-orient:vertical] [-webkit-line-clamp:2] overflow-hidden">
           {item.summary}
         </p>
-        <p className="text-base text-zinc-500">{formatDateKo(item.publishedAt)}</p>
+        <p className="text-base text-zinc-500">{formatDateKoYmd(item.publishedAt)}</p>
       </Link>
     </article>
   );
