@@ -1,14 +1,11 @@
 import { readErrorMessage } from "@/src/shared/lib/response"
+import type { output, ZodTypeAny } from "zod"
 
-type Parser<T> = {
-  parse: (input: unknown) => T
-}
-
-export async function getJson<T>(
+export async function getJson<TSchema extends ZodTypeAny>(
   url: string,
-  parser: Parser<T>,
+  parser: TSchema,
   init?: Omit<RequestInit, "method">
-): Promise<T> {
+): Promise<output<TSchema>> {
   const response = await fetch(url, {
     method: "GET",
     ...init,
@@ -22,12 +19,12 @@ export async function getJson<T>(
   return parser.parse(raw)
 }
 
-export async function postJson<T>(
+export async function postJson<TSchema extends ZodTypeAny>(
   url: string,
   payload: unknown,
-  parser: Parser<T>,
+  parser: TSchema,
   init?: Omit<RequestInit, "method" | "body">
-): Promise<T> {
+): Promise<output<TSchema>> {
   const response = await fetch(url, {
     method: "POST",
     headers: {

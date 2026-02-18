@@ -15,14 +15,14 @@
     "lint": "eslint . --max-warnings 0"
   },
   "dependencies": {
-    "zod": "^3.25.76"
+    "zod": "^4.3.6"
   },
   "devDependencies": {
+    "@types/node": "^25.1.0",
     "@workspace/eslint-config": "workspace:*",
     "@workspace/typescript-config": "workspace:*",
-    "@types/node": "^25.1.0",
-    "typescript": "^5.9.3",
-    "eslint": "^9.39.2"
+    "eslint": "^9.39.2",
+    "typescript": "^5.9.3"
   },
   "exports": {
     ".": {

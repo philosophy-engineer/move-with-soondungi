@@ -12,7 +12,7 @@ export const jsonContentSchema: z.ZodType<{
     .object({
       type: z.string().optional(),
       text: z.string().optional(),
-      attrs: z.record(z.unknown()).optional(),
+      attrs: z.record(z.string(), z.unknown()).optional(),
       content: z.array(jsonContentSchema).optional(),
     })
     .catchall(z.unknown())
