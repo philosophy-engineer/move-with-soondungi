@@ -1,6 +1,6 @@
 import type { PostFeedItem } from "@workspace/shared/blog";
 
-import { InfiniteFeedClient } from "@/src/features/home/ui/components/infinite-feed-client";
+import { PostFeedInfiniteClient } from "@/src/features/home/ui/components/post-feed-infinite-client";
 
 type PostFeedProps = {
   initialItems: PostFeedItem[];
@@ -8,5 +8,7 @@ type PostFeedProps = {
 };
 
 export function PostFeed({ initialItems, initialNextCursor }: PostFeedProps) {
-  return <InfiniteFeedClient initialItems={initialItems} initialNextCursor={initialNextCursor} />;
+  return (
+    <PostFeedInfiniteClient initialItems={initialItems} initialNextCursor={initialNextCursor} />
+  );
 }
