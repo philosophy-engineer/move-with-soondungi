@@ -1,15 +1,23 @@
-import { Button } from "@workspace/ui/components/button";
+import { fetchPublicPosts } from "@/src/features/home/model/home-client";
+import { HeroPlaceholder } from "@/src/features/home/ui/components/hero-placeholder";
+import { HomeHeader } from "@/src/features/home/ui/components/home-header";
+import { PostFeed } from "@/src/features/home/ui/components/post-feed";
 
-export function HomePage() {
+const FEED_PAGE_SIZE = 10;
+
+export async function HomePage() {
+  const initialFeed = await fetchPublicPosts({
+    limit: FEED_PAGE_SIZE,
+  });
+
   return (
-    <div className="flex min-h-svh items-center justify-center">
-      <div className="flex flex-col items-center justify-center gap-4">
-        <h1 className="text-2xl font-bold">Hello World</h1>
-        <div className="flex gap-2">
-          <Button>Button</Button>
-          <Button variant="outline">Outline</Button>
-        </div>
-      </div>
+    <div className="min-h-svh bg-zinc-100">
+      <HomeHeader />
+
+      <main className="mx-auto w-full max-w-[760px] px-4 pb-16 pt-8 sm:px-6">
+        <HeroPlaceholder />
+        <PostFeed initialItems={initialFeed.items} initialNextCursor={initialFeed.nextCursor} />
+      </main>
     </div>
   );
 }
