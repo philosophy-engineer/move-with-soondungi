@@ -10,10 +10,10 @@ export async function HomePage() {
   });
 
   return (
-    <div className="min-h-[calc(100svh-4rem)] bg-zinc-100">
-      <main className="mx-auto w-full max-w-190 px-4 pb-16 pt-8 sm:px-6">
+    <div className="min-h-svh bg-zinc-100">
+      <main className="pb-16">
         <HeroPlaceholder />
-        <div className="mx-auto w-full max-w-230 px-4 pt-10 sm:px-6">
+        <div className="mx-auto w-full max-w-245 px-4 pt-10 sm:px-6">
           <PostFeed initialItems={initialFeed.items} initialNextCursor={initialFeed.nextCursor} />
         </div>
       </main>

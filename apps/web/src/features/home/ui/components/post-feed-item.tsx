@@ -31,7 +31,7 @@ export function PostFeedItemCard({ item }: PostFeedItemProps) {
               width={1200}
               height={675}
               unoptimized
-              className="h-auto max-h-105 w-full object-cover transition-transform duration-300 group-hover:scale-[1.01]"
+              className="h-auto max-h-115 w-full object-cover transition-transform duration-300 group-hover:scale-[1.01]"
               loading="lazy"
             />
           </div>
