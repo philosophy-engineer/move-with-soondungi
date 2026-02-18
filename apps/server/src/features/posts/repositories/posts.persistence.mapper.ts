@@ -2,7 +2,10 @@ import { Post } from "../entities/post.entity.js";
 
 export type PostRecord = {
   postId: string;
+  slug?: string;
   title: string;
+  summary?: string;
+  thumbnailUrl?: string;
   contentHtml: string;
   contentJson: unknown;
   status: "DRAFT" | "PUBLISHED";
@@ -18,7 +21,10 @@ export function toPostRecord(post: Post): PostRecord {
 
   return {
     postId: post.postId,
+    slug: post.slug,
     title: post.title,
+    summary: post.summary,
+    thumbnailUrl: post.thumbnailUrl,
     contentHtml: post.contentHtml,
     contentJson: post.contentJson,
     status: post.status,
@@ -31,7 +37,10 @@ export function toPostRecord(post: Post): PostRecord {
 export function toPostEntity(record: PostRecord): Post {
   return Post.rehydrate({
     postId: record.postId,
+    slug: record.slug,
     title: record.title,
+    summary: record.summary,
+    thumbnailUrl: record.thumbnailUrl,
     contentHtml: record.contentHtml,
     contentJson: record.contentJson,
     status: record.status,

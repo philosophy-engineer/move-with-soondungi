@@ -4,7 +4,10 @@ import { PostOrmEntity } from "./typeorm/entities/post.orm-entity.js";
 export function toDomainPost(ormEntity: PostOrmEntity): Post {
   return Post.rehydrate({
     postId: ormEntity.id,
+    slug: ormEntity.slug ?? undefined,
     title: ormEntity.title,
+    summary: ormEntity.summary ?? undefined,
+    thumbnailUrl: ormEntity.thumbnailUrl ?? undefined,
     contentHtml: ormEntity.contentHtml,
     contentJson: ormEntity.contentJson,
     status: ormEntity.status,
@@ -22,6 +25,9 @@ export function toPostOrmEntity(domainEntity: Post): PostOrmEntity {
   }
 
   ormEntity.title = domainEntity.title;
+  ormEntity.slug = domainEntity.slug ?? null;
+  ormEntity.summary = domainEntity.summary ?? null;
+  ormEntity.thumbnailUrl = domainEntity.thumbnailUrl ?? null;
   ormEntity.contentHtml = domainEntity.contentHtml;
   ormEntity.contentJson = domainEntity.contentJson as Record<string, unknown>;
   ormEntity.status = domainEntity.status;
