@@ -84,8 +84,8 @@ export function AdminLoginPage() {
   };
 
   return (
-    <main className="min-h-svh bg-linear-to-b from-white via-slate-50 to-slate-100">
-      <div className="mx-auto flex min-h-svh w-full max-w-md items-center px-4 py-12 sm:px-6">
+    <main className="min-h-[calc(100svh-4rem)] bg-linear-to-b from-white via-slate-50 to-slate-100">
+      <div className="mx-auto flex min-h-[calc(100svh-4rem)] w-full max-w-md items-center px-4 py-12 sm:px-6">
         <Card className="w-full">
           <CardHeader className="space-y-2">
             <CardTitle className="text-2xl">관리자 로그인</CardTitle>

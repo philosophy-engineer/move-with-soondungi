@@ -183,7 +183,7 @@ export function EditorClient() {
 
   if (isCheckingAuth) {
     return (
-      <main className="h-svh overflow-hidden bg-linear-to-b from-white via-slate-50 to-slate-100">
+      <main className="h-[calc(100svh-4rem)] overflow-hidden bg-linear-to-b from-white via-slate-50 to-slate-100">
         <div className="mx-auto flex h-full w-full max-w-5xl items-center px-4 text-sm text-slate-500 sm:px-6">
           인증 상태를 확인하는 중...
         </div>
@@ -192,7 +192,7 @@ export function EditorClient() {
   }
 
   return (
-    <main className="h-svh overflow-hidden bg-linear-to-b from-white via-slate-50 to-slate-100">
+    <main className="h-[calc(100svh-4rem)] overflow-hidden bg-linear-to-b from-white via-slate-50 to-slate-100">
       <div className="mx-auto flex h-full w-full max-w-5xl flex-col px-4 pt-8 sm:px-6">
         <section className="flex min-h-0 flex-1 flex-col gap-6 pb-8">
           <div className="border-b border-slate-200 pb-4">

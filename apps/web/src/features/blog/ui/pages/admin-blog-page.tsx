@@ -66,7 +66,7 @@ export function AdminBlogPage() {
 
   if (isCheckingAuth) {
     return (
-      <main className="min-h-svh bg-linear-to-b from-white via-slate-50 to-slate-100">
+      <main className="min-h-[calc(100svh-4rem)] bg-linear-to-b from-white via-slate-50 to-slate-100">
         <div className="mx-auto w-full max-w-5xl px-4 py-12 text-sm text-slate-500 sm:px-6">
           인증 상태를 확인하는 중...
         </div>
@@ -75,7 +75,7 @@ export function AdminBlogPage() {
   }
 
   return (
-    <main className="min-h-svh bg-linear-to-b from-white via-slate-50 to-slate-100">
+    <main className="min-h-[calc(100svh-4rem)] bg-linear-to-b from-white via-slate-50 to-slate-100">
       <div className="mx-auto w-full max-w-5xl px-4 py-12 sm:px-6">
         <div className="mb-6 flex items-center justify-between gap-4">
           <div>
