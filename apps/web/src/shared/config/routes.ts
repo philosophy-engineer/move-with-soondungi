@@ -20,6 +20,6 @@ export const apiRoutes = {
   authLogin: "/api/auth/login",
   authMe: "/api/auth/me",
   authLogout: "/api/auth/logout",
-  uploadsPresign: "/api/uploads/presign",
-  uploadsComplete: "/api/uploads/complete",
+  uploadsPresign: "/api/admin/uploads/presign",
+  uploadsComplete: "/api/admin/uploads/complete",
 } as const;
