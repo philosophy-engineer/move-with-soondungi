@@ -56,35 +56,3 @@ export function resolveUniqueSlug(baseSlug: string, usedSlugs: Set<string>): str
     suffix += 1;
   }
 }
-
-export type PublicCursorPayload = {
-  publishedAt: string;
-  postId: string;
-};
-
-export function encodePublicCursor(cursor: PublicCursorPayload): string {
-  const encoded = Buffer.from(JSON.stringify(cursor), "utf-8").toString("base64url");
-  return encoded;
-}
-
-export function decodePublicCursor(rawCursor: string): PublicCursorPayload | undefined {
-  try {
-    const decoded = Buffer.from(rawCursor, "base64url").toString("utf-8");
-    const parsed = JSON.parse(decoded) as Partial<PublicCursorPayload>;
-
-    if (typeof parsed.publishedAt !== "string" || typeof parsed.postId !== "string") {
-      return undefined;
-    }
-
-    if (Number.isNaN(Date.parse(parsed.publishedAt))) {
-      return undefined;
-    }
-
-    return {
-      publishedAt: parsed.publishedAt,
-      postId: parsed.postId,
-    };
-  } catch {
-    return undefined;
-  }
-}

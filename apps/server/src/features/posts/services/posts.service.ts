@@ -9,8 +9,10 @@ import {
   type PostSummary,
   type PublishPostRequest,
 } from "@workspace/shared/blog";
+import { z } from "zod";
 
 import { throwBadRequest } from "../../../common/errors/error-response.js";
+import { decodeOpaqueCursor, encodeOpaqueCursor } from "../../../common/pagination/cursor.js";
 import { Post, type PostStatus } from "../entities/post.entity.js";
 import {
   POSTS_REPOSITORY,
@@ -18,12 +20,18 @@ import {
   type PublicPostsCursor,
 } from "../repositories/posts.repository.js";
 import {
-  decodePublicCursor,
-  encodePublicCursor,
   extractSummaryFromHtml,
   extractThumbnailUrlFromHtml,
   slugifyTitle,
 } from "../utils/post-public-meta.js";
+
+const publicPostsCursorSchema: z.ZodType<PublicPostsCursor> = z.object({
+  publishedAt: z
+    .string()
+    .min(1)
+    .refine((value) => !Number.isNaN(Date.parse(value)), "publishedAt must be a valid date string"),
+  postId: z.string().min(1),
+});
 
 @Injectable()
 export class PostsService {
@@ -60,7 +68,7 @@ export class PostsService {
         throwBadRequest("다음 페이지 커서를 생성할 수 없습니다.");
       }
 
-      nextCursor = encodePublicCursor(this.toPublicCursor(lastPost));
+      nextCursor = encodeOpaqueCursor(this.toPublicCursor(lastPost));
     }
 
     return {
@@ -166,7 +174,7 @@ export class PostsService {
       return undefined;
     }
 
-    const decoded = decodePublicCursor(rawCursor);
+    const decoded = decodeOpaqueCursor(rawCursor, publicPostsCursorSchema);
 
     if (!decoded) {
       throwBadRequest("잘못된 커서입니다.");
