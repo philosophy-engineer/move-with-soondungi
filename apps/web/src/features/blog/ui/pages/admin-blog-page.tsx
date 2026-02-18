@@ -1,58 +1,62 @@
-"use client"
+"use client";
 
-import Link from "next/link"
-import { useEffect, useState } from "react"
+import Link from "next/link";
+import { useEffect, useState } from "react";
 
-import { Plus } from "lucide-react"
+import { Plus } from "lucide-react";
 
-import { Button } from "@workspace/ui/components/button"
-import { Badge } from "@workspace/ui/components/badge"
-import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@workspace/ui/components/card"
-import { cn } from "@workspace/ui/lib/utils"
-
+import { Button } from "@workspace/ui/components/button";
+import { Badge } from "@workspace/ui/components/badge";
 import {
-  fetchPostSummaries,
-} from "@/src/features/blog/model/blog-queries"
+  Card,
+  CardHeader,
+  CardTitle,
+  CardDescription,
+  CardContent,
+} from "@workspace/ui/components/card";
+import { cn } from "@workspace/ui/lib/utils";
+
+import { fetchPostSummaries } from "@/src/features/blog/model/blog-queries";
 import {
   formatDateKo,
   getPostStatusClassName,
   getPostStatusLabel,
-} from "@/src/features/blog/model/blog-mappers"
-import { appRoutes } from "@/src/shared/config/routes"
+} from "@/src/features/blog/model/blog-mappers";
+import { appRoutes } from "@/src/shared/config/routes";
 
-import type { PostSummary } from "@workspace/shared/blog"
+import type { PostSummary } from "@workspace/shared/blog";
 
 export function AdminBlogPage() {
-  const [items, setItems] = useState<PostSummary[]>([])
-  const [isLoading, setIsLoading] = useState(true)
+  const [items, setItems] = useState<PostSummary[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    let isMounted = true
+    let isMounted = true;
 
     async function load() {
       try {
-        const summaries = await fetchPostSummaries()
+        const summaries = await fetchPostSummaries();
 
         if (isMounted) {
-          setItems(summaries)
+          setItems(summaries);
         }
       } catch {
         if (isMounted) {
-          setItems([])
+          setItems([]);
         }
       } finally {
         if (isMounted) {
-          setIsLoading(false)
+          setIsLoading(false);
         }
       }
     }
 
-    void load()
+    void load();
 
     return () => {
-      isMounted = false
-    }
-  }, [])
+      isMounted = false;
+    };
+  }, []);
 
   return (
     <main className="min-h-svh bg-linear-to-b from-white via-slate-50 to-slate-100">
@@ -77,9 +81,7 @@ export function AdminBlogPage() {
         <Card>
           <CardHeader>
             <CardTitle>게시글 목록</CardTitle>
-            <CardDescription>
-              상태와 수정 시간을 기준으로 최신 글부터 표시됩니다.
-            </CardDescription>
+            <CardDescription>상태와 수정 시간을 기준으로 최신 글부터 표시됩니다.</CardDescription>
           </CardHeader>
 
           <CardContent>
@@ -111,9 +113,7 @@ export function AdminBlogPage() {
                             {getPostStatusLabel(item.status)}
                           </Badge>
                         </td>
-                        <td className="px-4 py-3 text-slate-600">
-                          {formatDateKo(item.updatedAt)}
-                        </td>
+                        <td className="px-4 py-3 text-slate-600">{formatDateKo(item.updatedAt)}</td>
                       </tr>
                     ))}
                   </tbody>
@@ -124,5 +124,5 @@ export function AdminBlogPage() {
         </Card>
       </div>
     </main>
-  )
+  );
 }

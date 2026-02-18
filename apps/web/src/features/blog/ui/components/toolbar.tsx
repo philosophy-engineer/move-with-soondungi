@@ -1,8 +1,8 @@
-"use client"
+"use client";
 
-import { useState, type ComponentProps, type ReactNode } from "react"
+import { useState, type ComponentProps, type ReactNode } from "react";
 
-import type { Editor } from "@tiptap/react"
+import type { Editor } from "@tiptap/react";
 import {
   AlignCenter,
   AlignLeft,
@@ -15,24 +15,24 @@ import {
   ListOrdered,
   Palette,
   Underline,
-} from "lucide-react"
+} from "lucide-react";
 
-import { Button } from "@workspace/ui/components/button"
-import { ButtonGroup } from "@workspace/ui/components/button-group"
+import { Button } from "@workspace/ui/components/button";
+import { ButtonGroup } from "@workspace/ui/components/button-group";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "@workspace/ui/components/dropdown-menu"
+} from "@workspace/ui/components/dropdown-menu";
 import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
-} from "@workspace/ui/components/tooltip"
-import { cn } from "@workspace/ui/lib/utils"
+} from "@workspace/ui/components/tooltip";
+import { cn } from "@workspace/ui/lib/utils";
 
 const COLOR_PRESETS = [
   { value: "#0f172a", label: "슬레이트 900" },
@@ -45,9 +45,9 @@ const COLOR_PRESETS = [
   { value: "#7c3aed", label: "바이올렛 700" },
   { value: "#db2777", label: "핑크 600" },
   { value: "#000000", label: "블랙" },
-] as const
+] as const;
 
-const HEADING_LEVELS = [1, 2, 3, 4, 5] as const
+const HEADING_LEVELS = [1, 2, 3, 4, 5] as const;
 
 function ToolButton({
   active,
@@ -62,7 +62,7 @@ function ToolButton({
       className={cn("h-8 px-2 text-xs", className)}
       {...props}
     />
-  )
+  );
 }
 
 function ToolbarTooltip({ label, children }: { label: string; children: ReactNode }) {
@@ -71,23 +71,23 @@ function ToolbarTooltip({ label, children }: { label: string; children: ReactNod
       <TooltipTrigger asChild>{children}</TooltipTrigger>
       <TooltipContent sideOffset={8}>{label}</TooltipContent>
     </Tooltip>
-  )
+  );
 }
 
 interface ToolbarProps {
-  editor: Editor | null
-  onPickImage: () => void
-  isUploadingImage: boolean
+  editor: Editor | null;
+  onPickImage: () => void;
+  isUploadingImage: boolean;
 }
 
 export function Toolbar({ editor, onPickImage, isUploadingImage }: ToolbarProps) {
-  const [isColorMenuOpen, setIsColorMenuOpen] = useState(false)
+  const [isColorMenuOpen, setIsColorMenuOpen] = useState(false);
 
   if (!editor) {
-    return null
+    return null;
   }
 
-  const currentColor = editor.getAttributes("textStyle").color as string | undefined
+  const currentColor = editor.getAttributes("textStyle").color as string | undefined;
 
   return (
     <TooltipProvider delayDuration={120}>
@@ -106,10 +106,7 @@ export function Toolbar({ editor, onPickImage, isUploadingImage }: ToolbarProps)
                 </ToolbarTooltip>
               ))}
 
-              <span
-                aria-hidden
-                className="mx-1 my-1 h-6 w-px shrink-0 bg-slate-400"
-              />
+              <span aria-hidden className="mx-1 my-1 h-6 w-px shrink-0 bg-slate-400" />
 
               <ToolbarTooltip label="볼드">
                 <ToolButton
@@ -141,10 +138,7 @@ export function Toolbar({ editor, onPickImage, isUploadingImage }: ToolbarProps)
                 </ToolButton>
               </ToolbarTooltip>
 
-              <span
-                aria-hidden
-                className="mx-1 my-1 h-6 w-px shrink-0 bg-slate-400"
-              />
+              <span aria-hidden className="mx-1 my-1 h-6 w-px shrink-0 bg-slate-400" />
 
               <ToolbarTooltip label="왼쪽 정렬">
                 <ToolButton
@@ -176,10 +170,7 @@ export function Toolbar({ editor, onPickImage, isUploadingImage }: ToolbarProps)
                 </ToolButton>
               </ToolbarTooltip>
 
-              <span
-                aria-hidden
-                className="mx-1 my-1 h-6 w-px shrink-0 bg-slate-400"
-              />
+              <span aria-hidden className="mx-1 my-1 h-6 w-px shrink-0 bg-slate-400" />
 
               <ToolbarTooltip label="순서 리스트">
                 <ToolButton
@@ -201,10 +192,7 @@ export function Toolbar({ editor, onPickImage, isUploadingImage }: ToolbarProps)
                 </ToolButton>
               </ToolbarTooltip>
 
-              <span
-                aria-hidden
-                className="mx-1 my-1 h-6 w-px shrink-0 bg-slate-400"
-              />
+              <span aria-hidden className="mx-1 my-1 h-6 w-px shrink-0 bg-slate-400" />
 
               <DropdownMenu onOpenChange={setIsColorMenuOpen}>
                 <ToolbarTooltip label="텍스트 색상">
@@ -235,9 +223,7 @@ export function Toolbar({ editor, onPickImage, isUploadingImage }: ToolbarProps)
                         style={{ backgroundColor: color.value }}
                       />
                       <span>{color.label}</span>
-                      {currentColor === color.value ? (
-                        <Check className="ml-auto size-3.5" />
-                      ) : null}
+                      {currentColor === color.value ? <Check className="ml-auto size-3.5" /> : null}
                     </DropdownMenuItem>
                   ))}
 
@@ -249,10 +235,7 @@ export function Toolbar({ editor, onPickImage, isUploadingImage }: ToolbarProps)
                 </DropdownMenuContent>
               </DropdownMenu>
 
-              <span
-                aria-hidden
-                className="mx-1 my-1 h-6 w-px shrink-0 bg-slate-400"
-              />
+              <span aria-hidden className="mx-1 my-1 h-6 w-px shrink-0 bg-slate-400" />
 
               <ToolbarTooltip label="이미지 추가">
                 <ToolButton
@@ -264,11 +247,10 @@ export function Toolbar({ editor, onPickImage, isUploadingImage }: ToolbarProps)
                   <ImagePlus className="size-3.5" />
                 </ToolButton>
               </ToolbarTooltip>
-
             </ButtonGroup>
           </div>
         </div>
       </div>
     </TooltipProvider>
-  )
+  );
 }

@@ -1,4 +1,4 @@
-import { Button } from "@workspace/ui/components/button"
+import { Button } from "@workspace/ui/components/button";
 
 export function HomePage() {
   return (
@@ -11,5 +11,5 @@ export function HomePage() {
         </div>
       </div>
     </div>
-  )
+  );
 }

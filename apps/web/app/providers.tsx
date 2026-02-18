@@ -1,8 +1,8 @@
-"use client"
+"use client";
 
-import * as React from "react"
-import { ThemeProvider as NextThemesProvider } from "next-themes"
-import { Toaster } from "sonner"
+import * as React from "react";
+import { ThemeProvider as NextThemesProvider } from "next-themes";
+import { Toaster } from "sonner";
 
 export function Providers({ children }: { children: React.ReactNode }) {
   return (
@@ -17,5 +17,5 @@ export function Providers({ children }: { children: React.ReactNode }) {
       {children}
       <Toaster richColors position="top-right" closeButton />
     </NextThemesProvider>
-  )
+  );
 }
