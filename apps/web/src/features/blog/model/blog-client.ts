@@ -28,7 +28,7 @@ export function publishPost(payload: PublishPostRequest) {
 }
 
 export function createUploadPresign(payload: PresignUploadRequest) {
-  return postJson(apiRoutes.mockUploadsPresign, payload, presignUploadResponseSchema);
+  return postJson(apiRoutes.uploadsPresign, payload, presignUploadResponseSchema);
 }
 
 export async function uploadBlob(uploadUrl: string, file: File) {
@@ -46,5 +46,5 @@ export async function uploadBlob(uploadUrl: string, file: File) {
 }
 
 export function completeUpload(payload: CompleteUploadRequest) {
-  return postJson(apiRoutes.mockUploadsComplete, payload, completeUploadResponseSchema);
+  return postJson(apiRoutes.uploadsComplete, payload, completeUploadResponseSchema);
 }

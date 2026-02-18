@@ -8,6 +8,6 @@ export const apiRoutes = {
   mockPosts: "/api/mock/posts",
   mockPostsDraft: "/api/mock/posts/draft",
   mockPostsPublish: "/api/mock/posts/publish",
-  mockUploadsPresign: "/api/mock/uploads/presign",
-  mockUploadsComplete: "/api/mock/uploads/complete",
+  uploadsPresign: "/api/uploads/presign",
+  uploadsComplete: "/api/uploads/complete",
 } as const;
