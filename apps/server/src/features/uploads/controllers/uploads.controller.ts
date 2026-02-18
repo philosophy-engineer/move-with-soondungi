@@ -25,22 +25,12 @@ import {
 import type { Request, Response } from "express"
 import { ZodError } from "zod"
 
-import { MockStoreService } from "../services/mock-store.service.js"
 import {
   throwBadRequest,
   throwNotFound,
-} from "../utils/error-response.js"
-import { waitMockDelay } from "../utils/mock-delay.js"
-
-function getServerPublicOrigin(): string {
-  const origin = process.env.SERVER_PUBLIC_ORIGIN?.trim()
-
-  if (!origin) {
-    throw new Error("SERVER_PUBLIC_ORIGIN 환경변수를 찾을 수 없습니다.")
-  }
-
-  return origin
-}
+} from "../../../common/errors/error-response.js"
+import { waitMockDelay } from "../../../common/utils/mock.js"
+import { UploadsService } from "../uploads.service.js"
 
 async function readRequestBodyAsArrayBuffer(request: Request): Promise<ArrayBuffer> {
   const chunks: Buffer[] = []
@@ -55,7 +45,7 @@ async function readRequestBodyAsArrayBuffer(request: Request): Promise<ArrayBuff
 
 @Controller("api/mock/uploads")
 export class UploadsController {
-  constructor(private readonly store: MockStoreService) {}
+  constructor(private readonly uploadsService: UploadsService) {}
 
   @Post("presign")
   @HttpCode(200)
@@ -94,11 +84,7 @@ export class UploadsController {
         throwBadRequest("이미지 용량은 10MB 이하여야 합니다.")
       }
 
-      const result = this.store.createPresignedUpload(
-        payload,
-        getServerPublicOrigin()
-      )
-
+      const result = this.uploadsService.createPresignedUpload(payload)
       return presignUploadResponseSchema.parse(result)
     } catch (error) {
       if (error instanceof HttpException) {
@@ -136,7 +122,7 @@ export class UploadsController {
       const contentType =
         typeof rawContentType === "string" ? rawContentType : undefined
 
-      this.store.saveUploadBlob({
+      this.uploadsService.saveUploadBlob({
         fileKey,
         token,
         data,
@@ -166,7 +152,7 @@ export class UploadsController {
 
     try {
       const payload = completeUploadRequestSchema.parse(raw)
-      const result = this.store.completeUpload(payload, getServerPublicOrigin())
+      const result = this.uploadsService.completeUpload(payload)
 
       return completeUploadResponseSchema.parse(result)
     } catch (error) {
@@ -190,7 +176,7 @@ export class UploadsController {
   async getFile(@Param("imageId") imageId: string, @Res() response: Response) {
     await waitMockDelay()
 
-    const image = this.store.getImageById(imageId)
+    const image = this.uploadsService.getImageById(imageId)
 
     if (!image) {
       throwNotFound("이미지를 찾을 수 없습니다.")

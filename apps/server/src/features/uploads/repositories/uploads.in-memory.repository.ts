@@ -2,30 +2,16 @@ import { randomUUID } from "node:crypto"
 
 import { Injectable } from "@nestjs/common"
 import type {
-  DraftPostRequest,
-  JsonContent,
-  PostSaveResponse,
-  PostStatus,
-  PostSummary,
-  PublishPostRequest,
-} from "@workspace/shared/blog"
-import type {
   CompleteUploadRequest,
   CompleteUploadResponse,
   PresignUploadRequest,
   PresignUploadResponse,
 } from "@workspace/shared/upload"
 
-type StoredPost = {
-  postId: string
-  title: string
-  contentHtml: string
-  contentJson: JsonContent
-  status: PostStatus
-  createdAt: string
-  updatedAt: string
-  publishedAt?: string
-}
+import type {
+  StoredImage,
+  UploadsRepository,
+} from "./uploads.repository.js"
 
 type PendingUpload = {
   fileKey: string
@@ -38,19 +24,15 @@ type PendingUpload = {
   uploadedMimeType?: string
 }
 
-type StoredImage = {
-  imageId: string
+type InternalStoredImage = StoredImage & {
   fileKey: string
-  mimeType: string
-  bytes: ArrayBuffer
   createdAt: string
 }
 
 @Injectable()
-export class MockStoreService {
-  private readonly posts = new Map<string, StoredPost>()
+export class UploadsInMemoryRepository implements UploadsRepository {
   private readonly pendingUploads = new Map<string, PendingUpload>()
-  private readonly images = new Map<string, StoredImage>()
+  private readonly images = new Map<string, InternalStoredImage>()
   private readonly fileKeyToImageId = new Map<string, string>()
 
   private nowIso() {
@@ -161,62 +143,16 @@ export class MockStoreService {
   }
 
   getImageById(imageId: string): StoredImage | undefined {
-    return this.images.get(imageId)
-  }
+    const image = this.images.get(imageId)
 
-  private upsertPost(params: {
-    payload: DraftPostRequest | PublishPostRequest
-    status: PostStatus
-  }): PostSaveResponse {
-    const existing = params.payload.postId
-      ? this.posts.get(params.payload.postId)
-      : undefined
-
-    const postId =
-      existing?.postId ?? params.payload.postId ?? `post_${randomUUID()}`
-    const createdAt = existing?.createdAt ?? this.nowIso()
-    const updatedAt = this.nowIso()
-    const publishedAt =
-      params.status === "PUBLISHED"
-        ? existing?.publishedAt ?? updatedAt
-        : undefined
-
-    this.posts.set(postId, {
-      postId,
-      title: params.payload.title,
-      contentHtml: params.payload.contentHtml,
-      contentJson: params.payload.contentJson,
-      status: params.status,
-      createdAt,
-      updatedAt,
-      publishedAt,
-    })
+    if (!image) {
+      return undefined
+    }
 
     return {
-      postId,
-      status: params.status,
-      updatedAt,
-      publishedAt,
+      imageId: image.imageId,
+      mimeType: image.mimeType,
+      bytes: image.bytes,
     }
-  }
-
-  saveDraftPost(payload: DraftPostRequest): PostSaveResponse {
-    return this.upsertPost({ payload, status: "DRAFT" })
-  }
-
-  publishPost(payload: PublishPostRequest): PostSaveResponse {
-    return this.upsertPost({ payload, status: "PUBLISHED" })
-  }
-
-  listPostSummaries(): PostSummary[] {
-    return [...this.posts.values()]
-      .sort((a, b) => b.updatedAt.localeCompare(a.updatedAt))
-      .map((post) => ({
-        postId: post.postId,
-        title: post.title,
-        status: post.status,
-        updatedAt: post.updatedAt,
-        publishedAt: post.publishedAt,
-      }))
   }
 }

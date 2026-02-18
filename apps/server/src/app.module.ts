@@ -1,10 +1,11 @@
 import { Module } from "@nestjs/common"
 
+import { PostsModule } from "./features/posts/posts.module.js"
+import { UploadsModule } from "./features/uploads/uploads.module.js"
 import { HealthController } from "./health/health.controller.js"
-import { MockModule } from "./mock/mock.module.js"
 
 @Module({
-  imports: [MockModule],
+  imports: [PostsModule, UploadsModule],
   controllers: [HealthController],
 })
 export class AppModule {}

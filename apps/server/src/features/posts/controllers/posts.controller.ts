@@ -8,27 +8,26 @@ import {
 } from "@nestjs/common"
 import {
   draftPostRequestSchema,
-  hasMeaningfulBody,
   listPostsResponseSchema,
   postSaveResponseSchema,
   publishPostRequestSchema,
 } from "@workspace/shared/blog"
 import { ZodError } from "zod"
 
-import { MockStoreService } from "../services/mock-store.service.js"
-import { throwBadRequest } from "../utils/error-response.js"
-import { waitMockDelay } from "../utils/mock-delay.js"
+import { throwBadRequest } from "../../../common/errors/error-response.js"
+import { waitMockDelay } from "../../../common/utils/mock.js"
+import { PostsService } from "../posts.service.js"
 
 @Controller("api/mock/posts")
 export class PostsController {
-  constructor(private readonly store: MockStoreService) {}
+  constructor(private readonly postsService: PostsService) {}
 
   @Get()
   async listPosts() {
     await waitMockDelay()
 
     return listPostsResponseSchema.parse({
-      items: this.store.listPostSummaries(),
+      items: this.postsService.listPostSummaries(),
     })
   }
 
@@ -39,15 +38,7 @@ export class PostsController {
 
     try {
       const payload = draftPostRequestSchema.parse(raw)
-
-      if (!payload.title.trim()) {
-        throwBadRequest("제목은 필수입니다.")
-      }
-
-      const result = this.store.saveDraftPost({
-        ...payload,
-        title: payload.title.trim(),
-      })
+      const result = this.postsService.saveDraftPost(payload)
 
       return postSaveResponseSchema.parse(result)
     } catch (error) {
@@ -74,19 +65,7 @@ export class PostsController {
 
     try {
       const payload = publishPostRequestSchema.parse(raw)
-
-      if (!payload.title.trim()) {
-        throwBadRequest("제목은 필수입니다.")
-      }
-
-      if (!hasMeaningfulBody(payload.contentHtml, payload.contentJson)) {
-        throwBadRequest("발행하려면 본문 내용을 입력해주세요.")
-      }
-
-      const result = this.store.publishPost({
-        ...payload,
-        title: payload.title.trim(),
-      })
+      const result = this.postsService.publishPost(payload)
 
       return postSaveResponseSchema.parse(result)
     } catch (error) {
