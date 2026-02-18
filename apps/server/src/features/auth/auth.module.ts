@@ -22,6 +22,6 @@ import { AuthService } from "./services/auth.service.js";
       useClass: AuthUsersTypeormRepository,
     },
   ],
-  exports: [AuthService],
+  exports: [AuthService, AuthGuard],
 })
 export class AuthModule {}

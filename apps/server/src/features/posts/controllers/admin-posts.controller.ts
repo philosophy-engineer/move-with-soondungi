@@ -1,4 +1,4 @@
-import { Body, Controller, Get, HttpCode, Post } from "@nestjs/common";
+import { Body, Controller, Get, HttpCode, Post, UseGuards } from "@nestjs/common";
 import {
   draftPostRequestSchema,
   listPostsResponseSchema,
@@ -9,9 +9,11 @@ import {
 } from "@workspace/shared/blog";
 
 import { ZodValidationPipe } from "../../../common/pipes/zod-validation.pipe.js";
+import { AuthGuard } from "../../auth/guards/auth.guard.js";
 import { PostsService } from "../services/posts.service.js";
 
 @Controller("api/admin/posts")
+@UseGuards(AuthGuard)
 export class AdminPostsController {
   constructor(private readonly postsService: PostsService) {}
 
