@@ -1,12 +1,15 @@
 import type { ConfigService } from "@nestjs/config";
 import type { TypeOrmModuleOptions } from "@nestjs/typeorm";
 import type { DataSourceOptions } from "typeorm";
+
 import { ENV_KEYS, type AppEnv } from "../../config/env.types.js";
+import { UserOrmEntity } from "../../../features/auth/repositories/typeorm/entities/user.orm-entity.js";
 import { PostOrmEntity } from "../../../features/posts/repositories/typeorm/entities/post.orm-entity.js";
 import { UploadSessionOrmEntity } from "../../../features/uploads/repositories/typeorm/entities/upload-session.orm-entity.js";
 import { UploadedImageOrmEntity } from "../../../features/uploads/repositories/typeorm/entities/uploaded-image.orm-entity.js";
 
 export const TYPEORM_ENTITIES = [
+  UserOrmEntity,
   PostOrmEntity,
   UploadSessionOrmEntity,
   UploadedImageOrmEntity,
@@ -46,5 +49,8 @@ export function createTypeOrmOptions(
     DB_USER: configService.getOrThrow(ENV_KEYS.DB_USER),
     DB_PASSWORD: configService.getOrThrow(ENV_KEYS.DB_PASSWORD),
     DB_NAME: configService.getOrThrow(ENV_KEYS.DB_NAME),
+    JWT_SECRET: configService.getOrThrow(ENV_KEYS.JWT_SECRET),
+    AUTH_ADMIN_LOGIN_ID: configService.getOrThrow(ENV_KEYS.AUTH_ADMIN_LOGIN_ID),
+    AUTH_ADMIN_PASSWORD: configService.getOrThrow(ENV_KEYS.AUTH_ADMIN_PASSWORD),
   });
 }

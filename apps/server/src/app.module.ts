@@ -3,6 +3,7 @@ import { ConfigModule } from "@nestjs/config";
 
 import { validateEnv } from "./common/config/env.schema.js";
 import { DatabaseModule } from "./common/database/typeorm/database.module.js";
+import { AuthModule } from "./features/auth/auth.module.js";
 import { PostsModule } from "./features/posts/posts.module.js";
 import { UploadsModule } from "./features/uploads/uploads.module.js";
 import { HealthController } from "./health/health.controller.js";
@@ -15,6 +16,7 @@ import { HealthController } from "./health/health.controller.js";
       validate: validateEnv,
     }),
     DatabaseModule,
+    AuthModule,
     PostsModule,
     UploadsModule,
   ],

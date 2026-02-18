@@ -65,6 +65,9 @@ export const envSchema = z.looseObject({
   DB_USER: requiredString("DB_USER"),
   DB_PASSWORD: requiredString("DB_PASSWORD"),
   DB_NAME: requiredString("DB_NAME"),
+  JWT_SECRET: requiredString("JWT_SECRET"),
+  AUTH_ADMIN_LOGIN_ID: requiredString("AUTH_ADMIN_LOGIN_ID"),
+  AUTH_ADMIN_PASSWORD: requiredString("AUTH_ADMIN_PASSWORD"),
 });
 
 export function validateEnv(raw: Record<string, unknown>) {
