@@ -11,6 +11,7 @@ export interface PostsRepository {
   save(post: Post): Promise<Post>;
   findById(postId: string): Promise<Post | undefined>;
   findBySlug(slug: string): Promise<Post | undefined>;
+  findPublishedBySlug(slug: string): Promise<Post | undefined>;
   findAll(): Promise<Post[]>;
   findPublishedFeed(params: { limit: number; cursor?: PublicPostsCursor }): Promise<Post[]>;
 }

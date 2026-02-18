@@ -36,6 +36,15 @@ export class PostsInMemoryRepository implements PostsRepository {
     return found ? toPostEntity(found) : undefined;
   }
 
+  async findPublishedBySlug(slug: string): Promise<Post | undefined> {
+    const found = [...this.posts.values()].find(
+      (record) =>
+        record.slug === slug && record.status === "PUBLISHED" && Boolean(record.publishedAt),
+    );
+
+    return found ? toPostEntity(found) : undefined;
+  }
+
   async findPublishedFeed(params: { limit: number; cursor?: PublicPostsCursor }): Promise<Post[]> {
     const items = [...this.posts.values()]
       .map((record) => toPostEntity(record))

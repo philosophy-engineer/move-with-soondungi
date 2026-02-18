@@ -50,6 +50,22 @@ export class PostsTypeormRepository implements PostsRepository {
     return toDomainPost(found);
   }
 
+  async findPublishedBySlug(slug: string): Promise<Post | undefined> {
+    const found = await this.repository
+      .createQueryBuilder("post")
+      .where("post.slug = :slug", { slug })
+      .andWhere("post.status = :status", { status: "PUBLISHED" })
+      .andWhere("post.publishedAt IS NOT NULL")
+      .andWhere("post.deletedAt IS NULL")
+      .getOne();
+
+    if (!found) {
+      return undefined;
+    }
+
+    return toDomainPost(found);
+  }
+
   async findPublishedFeed(params: { limit: number; cursor?: PublicPostsCursor }): Promise<Post[]> {
     const query = this.repository
       .createQueryBuilder("post")

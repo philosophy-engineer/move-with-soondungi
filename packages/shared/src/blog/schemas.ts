@@ -65,3 +65,20 @@ export const postFeedItemSchema = z.object({
 export const listPublicPostsQuerySchema = cursorPageQuerySchema;
 
 export const listPublicPostsResponseSchema = cursorPageResponseSchema(postFeedItemSchema);
+
+export const postSlugParamSchema = z.object({
+  slug: z.string().trim().min(1),
+});
+
+export const publicPostDetailSchema = z.object({
+  postId: z.string(),
+  slug: z.string(),
+  title: z.string(),
+  summary: z.string(),
+  thumbnailUrl: z.string().nullable(),
+  contentHtml: z.string(),
+  publishedAt: z.string(),
+  updatedAt: z.string(),
+});
+
+export const getPublicPostDetailResponseSchema = publicPostDetailSchema;

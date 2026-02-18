@@ -7,10 +7,13 @@ import type {
   listPublicPostsQuerySchema,
   listPublicPostsResponseSchema,
   listPostsResponseSchema,
+  getPublicPostDetailResponseSchema,
+  postSlugParamSchema,
   postFeedItemSchema,
   postSaveResponseSchema,
   postStatusSchema,
   postSummarySchema,
+  publicPostDetailSchema,
   publishPostRequestSchema,
 } from "./schemas.js";
 
@@ -25,5 +28,8 @@ export type ListPostsResponse = z.infer<typeof listPostsResponseSchema>;
 export type PostFeedItem = z.infer<typeof postFeedItemSchema>;
 export type ListPublicPostsQuery = z.infer<typeof listPublicPostsQuerySchema>;
 export type ListPublicPostsResponse = z.infer<typeof listPublicPostsResponseSchema>;
+export type PostSlugParam = z.infer<typeof postSlugParamSchema>;
+export type PublicPostDetail = z.infer<typeof publicPostDetailSchema>;
+export type GetPublicPostDetailResponse = z.infer<typeof getPublicPostDetailResponseSchema>;
 
 export type AllowedImageMimeType = (typeof ALLOWED_IMAGE_MIME_TYPES)[number];

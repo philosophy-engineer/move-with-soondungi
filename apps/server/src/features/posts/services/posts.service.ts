@@ -2,16 +2,18 @@ import { Inject, Injectable } from "@nestjs/common";
 import {
   hasMeaningfulBody,
   type DraftPostRequest,
+  type GetPublicPostDetailResponse,
   type ListPublicPostsQuery,
   type ListPublicPostsResponse,
   type PostFeedItem,
+  type PublicPostDetail,
   type PostSaveResponse,
   type PostSummary,
   type PublishPostRequest,
 } from "@workspace/shared/blog";
 import { z } from "zod";
 
-import { throwBadRequest } from "../../../common/errors/error-response.js";
+import { throwBadRequest, throwNotFound } from "../../../common/errors/error-response.js";
 import { decodeOpaqueCursor, encodeOpaqueCursor } from "../../../common/pagination/cursor.js";
 import { Post, type PostStatus } from "../entities/post.entity.js";
 import {
@@ -75,6 +77,16 @@ export class PostsService {
       items,
       nextCursor,
     };
+  }
+
+  async getPublicPostDetailBySlug(slug: string): Promise<GetPublicPostDetailResponse> {
+    const post = await this.postsRepository.findPublishedBySlug(slug);
+
+    if (!post) {
+      throwNotFound("게시글을 찾을 수 없습니다.");
+    }
+
+    return this.toPublicPostDetail(post);
   }
 
   async saveDraftPost(payload: DraftPostRequest): Promise<PostSaveResponse> {
@@ -208,6 +220,23 @@ export class PostsService {
       summary: post.summary?.trim() || extractSummaryFromHtml(post.contentHtml, post.title),
       thumbnailUrl: post.thumbnailUrl ?? extractThumbnailUrlFromHtml(post.contentHtml) ?? null,
       publishedAt: post.publishedAt,
+    };
+  }
+
+  private toPublicPostDetail(post: Post): PublicPostDetail {
+    if (!post.postId || !post.slug || !post.publishedAt) {
+      throwBadRequest("발행된 게시글의 공개 데이터가 올바르지 않습니다.");
+    }
+
+    return {
+      postId: post.postId,
+      slug: post.slug,
+      title: post.title,
+      summary: post.summary?.trim() || extractSummaryFromHtml(post.contentHtml, post.title),
+      thumbnailUrl: post.thumbnailUrl ?? extractThumbnailUrlFromHtml(post.contentHtml) ?? null,
+      contentHtml: post.contentHtml,
+      publishedAt: post.publishedAt,
+      updatedAt: post.updatedAt,
     };
   }
 
