@@ -1,22 +1,16 @@
-import {
-  Body,
-  Controller,
-  Get,
-  HttpException,
-  HttpCode,
-  Post,
-} from "@nestjs/common"
+import { Body, Controller, Get, HttpCode, Post } from "@nestjs/common"
 import {
   draftPostRequestSchema,
   listPostsResponseSchema,
   postSaveResponseSchema,
   publishPostRequestSchema,
+  type DraftPostRequest,
+  type PublishPostRequest,
 } from "@workspace/shared/blog"
-import { ZodError } from "zod"
 
-import { throwBadRequest } from "../../../common/errors/error-response.js"
+import { ZodValidationPipe } from "../../../common/pipes/zod-validation.pipe.js"
 import { waitMockDelay } from "../../../common/utils/mock.js"
-import { PostsService } from "../posts.service.js"
+import { PostsService } from "../services/posts.service.js"
 
 @Controller("api/mock/posts")
 export class PostsController {
@@ -33,55 +27,24 @@ export class PostsController {
 
   @Post("draft")
   @HttpCode(200)
-  async saveDraft(@Body() raw: unknown) {
+  async saveDraft(
+    @Body(new ZodValidationPipe(draftPostRequestSchema)) payload: DraftPostRequest
+  ) {
     await waitMockDelay()
 
-    try {
-      const payload = draftPostRequestSchema.parse(raw)
-      const result = this.postsService.saveDraftPost(payload)
-
-      return postSaveResponseSchema.parse(result)
-    } catch (error) {
-      if (error instanceof HttpException) {
-        throw error
-      }
-
-      if (error instanceof ZodError) {
-        throwBadRequest("잘못된 요청입니다.")
-      }
-
-      if (error instanceof Error) {
-        throwBadRequest(error.message)
-      }
-
-      throwBadRequest("요청 처리 중 오류가 발생했습니다.")
-    }
+    const result = this.postsService.saveDraftPost(payload)
+    return postSaveResponseSchema.parse(result)
   }
 
   @Post("publish")
   @HttpCode(200)
-  async publish(@Body() raw: unknown) {
+  async publish(
+    @Body(new ZodValidationPipe(publishPostRequestSchema))
+    payload: PublishPostRequest
+  ) {
     await waitMockDelay()
 
-    try {
-      const payload = publishPostRequestSchema.parse(raw)
-      const result = this.postsService.publishPost(payload)
-
-      return postSaveResponseSchema.parse(result)
-    } catch (error) {
-      if (error instanceof HttpException) {
-        throw error
-      }
-
-      if (error instanceof ZodError) {
-        throwBadRequest("잘못된 요청입니다.")
-      }
-
-      if (error instanceof Error) {
-        throwBadRequest(error.message)
-      }
-
-      throwBadRequest("요청 처리 중 오류가 발생했습니다.")
-    }
+    const result = this.postsService.publishPost(payload)
+    return postSaveResponseSchema.parse(result)
   }
 }

@@ -1,14 +1,9 @@
-import type {
-  DraftPostRequest,
-  PostSaveResponse,
-  PostSummary,
-  PublishPostRequest,
-} from "@workspace/shared/blog"
+import type { Post } from "../entities/post.entity.js"
 
 export const POSTS_REPOSITORY = Symbol("POSTS_REPOSITORY")
 
 export interface PostsRepository {
-  saveDraftPost(payload: DraftPostRequest): PostSaveResponse
-  publishPost(payload: PublishPostRequest): PostSaveResponse
-  listPostSummaries(): PostSummary[]
+  save(post: Post): Post
+  findById(postId: string): Post | undefined
+  findAll(): Post[]
 }
