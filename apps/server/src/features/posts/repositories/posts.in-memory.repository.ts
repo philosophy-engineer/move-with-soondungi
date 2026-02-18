@@ -8,12 +8,16 @@ import type { PostsRepository } from "./posts.repository.js";
 export class PostsInMemoryRepository implements PostsRepository {
   private readonly posts = new Map<string, PostRecord>();
 
-  save(post: Post): Post {
+  async save(post: Post): Promise<Post> {
+    if (!post.postId) {
+      throw new Error("postId가 없는 게시글은 저장할 수 없습니다.");
+    }
+
     this.posts.set(post.postId, toPostRecord(post));
     return post;
   }
 
-  findById(postId: string): Post | undefined {
+  async findById(postId: string): Promise<Post | undefined> {
     const record = this.posts.get(postId);
 
     if (!record) {
@@ -23,7 +27,7 @@ export class PostsInMemoryRepository implements PostsRepository {
     return toPostEntity(record);
   }
 
-  findAll(): Post[] {
+  async findAll(): Promise<Post[]> {
     return [...this.posts.values()].map((record) => toPostEntity(record));
   }
 }

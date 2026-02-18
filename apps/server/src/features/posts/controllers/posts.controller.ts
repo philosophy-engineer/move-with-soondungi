@@ -20,8 +20,10 @@ export class PostsController {
   async listPosts() {
     await waitMockDelay();
 
+    const items = await this.postsService.listPostSummaries();
+
     return listPostsResponseSchema.parse({
-      items: this.postsService.listPostSummaries(),
+      items,
     });
   }
 
@@ -30,7 +32,7 @@ export class PostsController {
   async saveDraft(@Body(new ZodValidationPipe(draftPostRequestSchema)) payload: DraftPostRequest) {
     await waitMockDelay();
 
-    const result = this.postsService.saveDraftPost(payload);
+    const result = await this.postsService.saveDraftPost(payload);
     return postSaveResponseSchema.parse(result);
   }
 
@@ -42,7 +44,7 @@ export class PostsController {
   ) {
     await waitMockDelay();
 
-    const result = this.postsService.publishPost(payload);
+    const result = await this.postsService.publishPost(payload);
     return postSaveResponseSchema.parse(result);
   }
 }

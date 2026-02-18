@@ -1,7 +1,7 @@
 export type PostStatus = "DRAFT" | "PUBLISHED";
 
 type PostProps = {
-  postId: string;
+  postId?: string;
   title: string;
   contentHtml: string;
   contentJson: unknown;
@@ -12,7 +12,7 @@ type PostProps = {
 };
 
 export class Post {
-  readonly postId: string;
+  readonly postId?: string;
   readonly title: string;
   readonly contentHtml: string;
   readonly contentJson: unknown;

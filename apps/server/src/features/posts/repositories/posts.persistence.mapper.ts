@@ -12,6 +12,10 @@ export type PostRecord = {
 };
 
 export function toPostRecord(post: Post): PostRecord {
+  if (!post.postId) {
+    throw new Error("postId가 없는 게시글은 저장 레코드로 변환할 수 없습니다.");
+  }
+
   return {
     postId: post.postId,
     title: post.title,

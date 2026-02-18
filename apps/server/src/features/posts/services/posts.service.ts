@@ -1,5 +1,3 @@
-import { randomUUID } from "node:crypto";
-
 import { Inject, Injectable } from "@nestjs/common";
 import {
   hasMeaningfulBody,
@@ -20,14 +18,15 @@ export class PostsService {
     private readonly postsRepository: PostsRepository,
   ) {}
 
-  listPostSummaries(): PostSummary[] {
-    return this.postsRepository
-      .findAll()
+  async listPostSummaries(): Promise<PostSummary[]> {
+    const posts = await this.postsRepository.findAll();
+
+    return posts
       .sort((a, b) => b.updatedAt.localeCompare(a.updatedAt))
       .map((post) => this.toPostSummary(post));
   }
 
-  saveDraftPost(payload: DraftPostRequest): PostSaveResponse {
+  async saveDraftPost(payload: DraftPostRequest): Promise<PostSaveResponse> {
     const title = payload.title.trim();
 
     if (!title) {
@@ -43,7 +42,7 @@ export class PostsService {
     });
   }
 
-  publishPost(payload: PublishPostRequest): PostSaveResponse {
+  async publishPost(payload: PublishPostRequest): Promise<PostSaveResponse> {
     const title = payload.title.trim();
 
     if (!title) {
@@ -63,16 +62,18 @@ export class PostsService {
     });
   }
 
-  private savePost(payload: {
+  private async savePost(payload: {
     postId?: string;
     title: string;
     contentHtml: string;
     contentJson: unknown;
     status: PostStatus;
-  }): PostSaveResponse {
-    const existingPost = payload.postId ? this.postsRepository.findById(payload.postId) : undefined;
+  }): Promise<PostSaveResponse> {
+    const existingPost = payload.postId
+      ? await this.postsRepository.findById(payload.postId)
+      : undefined;
 
-    const postId = existingPost?.postId ?? payload.postId ?? `post_${randomUUID()}`;
+    const postId = existingPost?.postId ?? payload.postId;
     const createdAt = existingPost?.createdAt ?? new Date().toISOString();
     const updatedAt = new Date().toISOString();
     const publishedAt =
@@ -90,7 +91,7 @@ export class PostsService {
     });
 
     try {
-      const savedPost = this.postsRepository.save(post);
+      const savedPost = await this.postsRepository.save(post);
       return this.toPostSaveResponse(savedPost);
     } catch (error) {
       if (error instanceof Error) {
@@ -102,6 +103,10 @@ export class PostsService {
   }
 
   private toPostSummary(post: Post): PostSummary {
+    if (!post.postId) {
+      throwBadRequest("게시글 ID 생성에 실패했습니다.");
+    }
+
     return {
       postId: post.postId,
       title: post.title,
@@ -112,6 +117,10 @@ export class PostsService {
   }
 
   private toPostSaveResponse(post: Post): PostSaveResponse {
+    if (!post.postId) {
+      throwBadRequest("게시글 ID 생성에 실패했습니다.");
+    }
+
     return {
       postId: post.postId,
       status: post.status,
