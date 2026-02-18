@@ -18,12 +18,12 @@ export class UploadsInMemoryRepository implements UploadsRepository {
   private readonly images = new Map<string, UploadedImageRecord>();
   private readonly fileKeyToImageId = new Map<string, string>();
 
-  saveSession(session: UploadSession): UploadSession {
+  async saveSession(session: UploadSession): Promise<UploadSession> {
     this.sessions.set(session.fileKey, toUploadSessionRecord(session));
     return session;
   }
 
-  findSessionByFileKey(fileKey: string): UploadSession | undefined {
+  async findSessionByFileKey(fileKey: string): Promise<UploadSession | undefined> {
     const record = this.sessions.get(fileKey);
 
     if (!record) {
@@ -33,12 +33,16 @@ export class UploadsInMemoryRepository implements UploadsRepository {
     return toUploadSessionEntity(record);
   }
 
-  saveImage(image: UploadedImage): UploadedImage {
+  async saveImage(image: UploadedImage): Promise<UploadedImage> {
+    if (!image.imageId) {
+      throw new Error("imageId가 없는 이미지는 저장할 수 없습니다.");
+    }
+
     this.images.set(image.imageId, toUploadedImageRecord(image));
     return image;
   }
 
-  findImageById(imageId: string): UploadedImage | undefined {
+  async findImageById(imageId: string): Promise<UploadedImage | undefined> {
     const record = this.images.get(imageId);
 
     if (!record) {
@@ -48,11 +52,11 @@ export class UploadsInMemoryRepository implements UploadsRepository {
     return toUploadedImageEntity(record);
   }
 
-  findImageIdByFileKey(fileKey: string): string | undefined {
+  async findImageIdByFileKey(fileKey: string): Promise<string | undefined> {
     return this.fileKeyToImageId.get(fileKey);
   }
 
-  saveImageLink(fileKey: string, imageId: string): void {
+  async saveImageLink(fileKey: string, imageId: string): Promise<void> {
     this.fileKeyToImageId.set(fileKey, imageId);
   }
 }

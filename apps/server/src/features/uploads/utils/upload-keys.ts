@@ -16,10 +16,6 @@ export function createUploadCompleteToken(): string {
   return `token_${createDatePrefix()}_${createNanoId(ID_LENGTH, ID_ALPHABET)}`;
 }
 
-export function createUploadedImageId(): string {
-  return `img_${createDatePrefix()}_${createNanoId(ID_LENGTH, ID_ALPHABET)}`;
-}
-
 export function sanitizeFilename(filename: string): string {
   return filename.replace(/[^a-zA-Z0-9._-]/g, "_");
 }

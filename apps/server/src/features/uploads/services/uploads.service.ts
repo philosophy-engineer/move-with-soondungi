@@ -19,7 +19,6 @@ import { UPLOADS_REPOSITORY, type UploadsRepository } from "../repositories/uplo
 import { UploadsS3Repository } from "../repositories/uploads.s3.repository.js";
 import {
   buildUploadObjectKey,
-  createUploadedImageId,
   createUploadCompleteToken,
   createUploadFileKey,
 } from "../utils/upload-keys.js";
@@ -51,8 +50,8 @@ export class UploadsService {
       expiresAtMs,
     });
 
-    this.runRepository(() => {
-      this.uploadsRepository.saveSession(session);
+    await this.runRepository(async () => {
+      await this.uploadsRepository.saveSession(session);
     });
 
     const uploadUrl = await this.runS3(() =>
@@ -72,8 +71,8 @@ export class UploadsService {
   }
 
   async completeUpload(payload: CompleteUploadRequest): Promise<CompleteUploadResponse> {
-    const session = this.runRepository(() => {
-      const found = this.uploadsRepository.findSessionByFileKey(payload.fileKey);
+    const session = await this.runRepository(async () => {
+      const found = await this.uploadsRepository.findSessionByFileKey(payload.fileKey);
 
       if (!found) {
         throw new Error("업로드 세션을 찾을 수 없습니다.");
@@ -90,12 +89,12 @@ export class UploadsService {
       return found;
     });
 
-    const existingImageId = this.runRepository(() =>
+    const existingImageId = await this.runRepository(() =>
       this.uploadsRepository.findImageIdByFileKey(payload.fileKey),
     );
 
     if (existingImageId) {
-      const existingImage = this.runRepository(() =>
+      const existingImage = await this.runRepository(() =>
         this.uploadsRepository.findImageById(existingImageId),
       );
       const objectKey = existingImage?.objectKey ?? session.objectKey;
@@ -115,21 +114,30 @@ export class UploadsService {
     }
 
     const image = UploadedImage.create({
-      imageId: createUploadedImageId(),
       fileKey: session.fileKey,
       objectKey: session.objectKey,
       mimeType: session.mimeType,
       createdAt: new Date().toISOString(),
     });
 
-    this.runRepository(() => {
-      this.uploadsRepository.saveImage(image);
-      this.uploadsRepository.saveImageLink(payload.fileKey, image.imageId);
+    const savedImage = await this.runRepository(async () => {
+      const storedImage = await this.uploadsRepository.saveImage(image);
+
+      if (!storedImage.imageId) {
+        throw new Error("이미지 ID 생성에 실패했습니다.");
+      }
+
+      await this.uploadsRepository.saveImageLink(payload.fileKey, storedImage.imageId);
+      return storedImage;
     });
 
+    if (!savedImage.imageId) {
+      throwBadRequest("이미지 ID 생성에 실패했습니다.");
+    }
+
     return {
-      imageId: image.imageId,
-      url: this.uploadsS3Repository.buildPublicObjectUrl(image.objectKey),
+      imageId: savedImage.imageId,
+      url: this.uploadsS3Repository.buildPublicObjectUrl(savedImage.objectKey),
     };
   }
 
@@ -143,9 +151,9 @@ export class UploadsService {
     }
   }
 
-  private runRepository<T>(runner: () => T): T {
+  private async runRepository<T>(runner: () => Promise<T>): Promise<T> {
     try {
-      return runner();
+      return await runner();
     } catch (error) {
       if (error instanceof Error) {
         throwBadRequest(error.message);

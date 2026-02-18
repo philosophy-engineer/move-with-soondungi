@@ -1,5 +1,5 @@
 type UploadedImageProps = {
-  imageId: string;
+  imageId?: string;
   fileKey: string;
   objectKey: string;
   mimeType: string;
@@ -8,7 +8,7 @@ type UploadedImageProps = {
 };
 
 export class UploadedImage {
-  readonly imageId: string;
+  readonly imageId?: string;
   readonly fileKey: string;
   readonly objectKey: string;
   readonly mimeType: string;

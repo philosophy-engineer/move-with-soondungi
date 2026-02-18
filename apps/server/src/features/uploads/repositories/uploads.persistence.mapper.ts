@@ -51,6 +51,10 @@ export function toUploadSessionEntity(record: UploadSessionRecord): UploadSessio
 }
 
 export function toUploadedImageRecord(entity: UploadedImage): UploadedImageRecord {
+  if (!entity.imageId) {
+    throw new Error("imageId가 없는 이미지는 저장 레코드로 변환할 수 없습니다.");
+  }
+
   return {
     imageId: entity.imageId,
     fileKey: entity.fileKey,
