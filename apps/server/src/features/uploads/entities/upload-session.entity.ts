@@ -1,4 +1,4 @@
-type UploadSessionEntityParams = {
+type UploadSessionProps = {
   fileKey: string;
   objectKey: string;
   filename: string;
@@ -21,7 +21,7 @@ export class UploadSession {
   readonly uploadedData?: ArrayBuffer;
   readonly uploadedMimeType?: string;
 
-  constructor(params: UploadSessionEntityParams) {
+  private constructor(params: UploadSessionProps) {
     this.fileKey = params.fileKey;
     this.objectKey = params.objectKey;
     this.filename = params.filename;
@@ -31,5 +31,13 @@ export class UploadSession {
     this.expiresAtMs = params.expiresAtMs;
     this.uploadedData = params.uploadedData;
     this.uploadedMimeType = params.uploadedMimeType;
+  }
+
+  static create(params: UploadSessionProps): UploadSession {
+    return new UploadSession(params);
+  }
+
+  static rehydrate(params: UploadSessionProps): UploadSession {
+    return new UploadSession(params);
   }
 }

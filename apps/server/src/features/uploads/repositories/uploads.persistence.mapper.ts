@@ -37,7 +37,7 @@ export function toUploadSessionRecord(entity: UploadSession): UploadSessionRecor
 }
 
 export function toUploadSessionEntity(record: UploadSessionRecord): UploadSession {
-  return new UploadSession({
+  return UploadSession.rehydrate({
     fileKey: record.fileKey,
     objectKey: record.objectKey,
     filename: record.filename,
@@ -62,7 +62,7 @@ export function toUploadedImageRecord(entity: UploadedImage): UploadedImageRecor
 }
 
 export function toUploadedImageEntity(record: UploadedImageRecord): UploadedImage {
-  return new UploadedImage({
+  return UploadedImage.rehydrate({
     imageId: record.imageId,
     fileKey: record.fileKey,
     objectKey: record.objectKey,

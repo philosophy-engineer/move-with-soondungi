@@ -41,7 +41,7 @@ export class UploadsService {
     const expiresAtMs = Date.now() + PRESIGNED_UPLOAD_EXPIRES_IN_SECONDS * 1000;
     const expiresAt = new Date(expiresAtMs).toISOString();
 
-    const session = new UploadSession({
+    const session = UploadSession.create({
       fileKey,
       objectKey,
       filename: payload.filename,
@@ -114,7 +114,7 @@ export class UploadsService {
       throwBadRequest("업로드된 파일이 없습니다.");
     }
 
-    const image = new UploadedImage({
+    const image = UploadedImage.create({
       imageId: createUploadedImageId(),
       fileKey: session.fileKey,
       objectKey: session.objectKey,

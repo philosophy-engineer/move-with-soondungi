@@ -25,7 +25,7 @@ export function toPostRecord(post: Post): PostRecord {
 }
 
 export function toPostEntity(record: PostRecord): Post {
-  return new Post({
+  return Post.rehydrate({
     postId: record.postId,
     title: record.title,
     contentHtml: record.contentHtml,

@@ -78,7 +78,7 @@ export class PostsService {
     const publishedAt =
       payload.status === "PUBLISHED" ? (existingPost?.publishedAt ?? updatedAt) : undefined;
 
-    const post = new Post({
+    const post = Post.create({
       postId,
       title: payload.title,
       contentHtml: payload.contentHtml,

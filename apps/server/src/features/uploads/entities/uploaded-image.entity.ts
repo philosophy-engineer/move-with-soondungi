@@ -1,4 +1,4 @@
-type UploadedImageEntityParams = {
+type UploadedImageProps = {
   imageId: string;
   fileKey: string;
   objectKey: string;
@@ -15,12 +15,20 @@ export class UploadedImage {
   readonly bytes?: ArrayBuffer;
   readonly createdAt: string;
 
-  constructor(params: UploadedImageEntityParams) {
+  private constructor(params: UploadedImageProps) {
     this.imageId = params.imageId;
     this.fileKey = params.fileKey;
     this.objectKey = params.objectKey;
     this.mimeType = params.mimeType;
     this.bytes = params.bytes;
     this.createdAt = params.createdAt;
+  }
+
+  static create(params: UploadedImageProps): UploadedImage {
+    return new UploadedImage(params);
+  }
+
+  static rehydrate(params: UploadedImageProps): UploadedImage {
+    return new UploadedImage(params);
   }
 }

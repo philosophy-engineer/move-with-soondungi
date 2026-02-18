@@ -1,6 +1,6 @@
 export type PostStatus = "DRAFT" | "PUBLISHED";
 
-type PostEntityParams = {
+type PostProps = {
   postId: string;
   title: string;
   contentHtml: string;
@@ -21,7 +21,7 @@ export class Post {
   readonly updatedAt: string;
   readonly publishedAt?: string;
 
-  constructor(params: PostEntityParams) {
+  private constructor(params: PostProps) {
     this.postId = params.postId;
     this.title = params.title;
     this.contentHtml = params.contentHtml;
@@ -30,5 +30,13 @@ export class Post {
     this.createdAt = params.createdAt;
     this.updatedAt = params.updatedAt;
     this.publishedAt = params.publishedAt;
+  }
+
+  static create(params: PostProps): Post {
+    return new Post(params);
+  }
+
+  static rehydrate(params: PostProps): Post {
+    return new Post(params);
   }
 }
