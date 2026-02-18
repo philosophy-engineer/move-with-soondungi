@@ -3,7 +3,7 @@ import { NextResponse } from "next/server"
 import {
   completeUploadRequestSchema,
   completeUploadResponseSchema,
-} from "@workspace/shared/blog"
+} from "@workspace/shared/upload"
 
 import {
   completeUpload,

@@ -1,13 +1,15 @@
 import {
-  completeUploadResponseSchema,
   listPostsResponseSchema,
   postSaveResponseSchema,
-  presignUploadResponseSchema,
-  type CompleteUploadRequest,
   type DraftPostRequest,
-  type PresignUploadRequest,
   type PublishPostRequest,
 } from "@workspace/shared/blog"
+import {
+  completeUploadResponseSchema,
+  presignUploadResponseSchema,
+  type CompleteUploadRequest,
+  type PresignUploadRequest,
+} from "@workspace/shared/upload"
 
 import { apiRoutes } from "@/src/shared/config/routes"
 import { getJson, postJson } from "@/src/shared/lib/http"

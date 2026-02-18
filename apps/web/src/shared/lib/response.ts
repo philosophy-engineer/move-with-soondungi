@@ -1,4 +1,4 @@
-import { errorResponseSchema } from "@workspace/shared/blog"
+import { errorResponseSchema } from "@workspace/shared/common"
 
 export async function readErrorMessage(
   response: Response,

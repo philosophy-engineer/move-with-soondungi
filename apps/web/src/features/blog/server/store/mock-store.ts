@@ -1,17 +1,19 @@
 import { randomUUID } from "node:crypto"
 
 import type {
-  CompleteUploadRequest,
-  CompleteUploadResponse,
   DraftPostRequest,
   JsonContent,
   PostSaveResponse,
   PostStatus,
   PostSummary,
-  PresignUploadRequest,
-  PresignUploadResponse,
   PublishPostRequest,
 } from "@workspace/shared/blog"
+import type {
+  CompleteUploadRequest,
+  CompleteUploadResponse,
+  PresignUploadRequest,
+  PresignUploadResponse,
+} from "@workspace/shared/upload"
 
 type StoredPost = {
   postId: string

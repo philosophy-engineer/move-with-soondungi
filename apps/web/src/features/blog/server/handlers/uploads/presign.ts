@@ -4,9 +4,11 @@ import {
   ALLOWED_IMAGE_MIME_TYPES,
   type AllowedImageMimeType,
   MAX_IMAGE_SIZE_BYTES,
+} from "@workspace/shared/blog"
+import {
   presignUploadRequestSchema,
   presignUploadResponseSchema,
-} from "@workspace/shared/blog"
+} from "@workspace/shared/upload"
 
 import {
   createPresignedUpload,

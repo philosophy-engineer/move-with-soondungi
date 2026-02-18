@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server"
 
-import { errorResponseSchema } from "@workspace/shared/blog"
+import { errorResponseSchema } from "@workspace/shared/common"
 import { ZodError } from "zod"
 
 export function errorResponse(message: string, status = 400) {

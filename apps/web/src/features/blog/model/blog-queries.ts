@@ -1,11 +1,13 @@
 import {
-  completeUploadRequestSchema,
   draftPostRequestSchema,
-  presignUploadRequestSchema,
   publishPostRequestSchema,
   type DraftPostRequest,
   type PublishPostRequest,
 } from "@workspace/shared/blog"
+import {
+  completeUploadRequestSchema,
+  presignUploadRequestSchema,
+} from "@workspace/shared/upload"
 
 import {
   completeUpload,
