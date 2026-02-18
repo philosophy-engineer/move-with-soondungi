@@ -6,16 +6,11 @@ import { useEffect, useState } from "react"
 import { Plus } from "lucide-react"
 
 import { Button } from "@workspace/ui/components/button"
+import { Badge } from "@workspace/ui/components/badge"
+import { cn } from "@workspace/ui/lib/utils"
 
-import { Badge } from "@/components/ui/badge"
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card"
 import type { PostSummary } from "@/lib/blog-types"
+import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@workspace/ui/components/card"
 
 function formatDate(dateString: string) {
   return new Intl.DateTimeFormat("ko-KR", {
@@ -115,7 +110,12 @@ export default function AdminBlogPage() {
                         <td className="px-4 py-3 text-slate-800">{item.title}</td>
                         <td className="px-4 py-3">
                           <Badge
-                            variant={item.status === "PUBLISHED" ? "published" : "draft"}
+                            variant="secondary"
+                            className={cn(
+                              item.status === "PUBLISHED"
+                                ? "bg-emerald-100 text-emerald-700 hover:bg-emerald-100"
+                                : "bg-amber-100 text-amber-700 hover:bg-amber-100"
+                            )}
                           >
                             {item.status === "PUBLISHED" ? "발행" : "초안"}
                           </Badge>

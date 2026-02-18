@@ -18,8 +18,7 @@ import {
 
 import { Button } from "@workspace/ui/components/button"
 import { cn } from "@workspace/ui/lib/utils"
-
-import { Separator } from "@/components/ui/separator"
+import { Separator } from "@workspace/ui/components/separator"
 
 const COLOR_PRESETS = [
   "#0f172a",

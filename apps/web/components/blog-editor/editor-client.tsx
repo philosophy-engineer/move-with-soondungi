@@ -16,14 +16,6 @@ import { Button } from "@workspace/ui/components/button"
 
 import { Toolbar } from "@/components/blog-editor/toolbar"
 import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card"
-import { Input } from "@/components/ui/input"
-import {
   ALLOWED_IMAGE_MIME_TYPES,
   type AllowedImageMimeType,
   hasMeaningfulBody,
@@ -32,6 +24,8 @@ import {
   type PostSaveResponse,
   type PresignUploadResponse,
 } from "@/lib/blog-types"
+import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@workspace/ui/components/card"
+import { Input } from "@workspace/ui/components/input"
 
 async function parseErrorMessage(response: Response) {
   try {
