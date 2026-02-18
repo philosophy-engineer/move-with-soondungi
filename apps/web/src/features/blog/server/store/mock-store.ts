@@ -6,18 +6,19 @@ import type {
   DraftPostRequest,
   JsonContent,
   PostSaveResponse,
+  PostStatus,
   PostSummary,
   PresignUploadRequest,
   PresignUploadResponse,
   PublishPostRequest,
-} from "@/lib/blog-types"
+} from "@workspace/shared/blog"
 
 type StoredPost = {
   postId: string
   title: string
   contentHtml: string
   contentJson: JsonContent
-  status: "DRAFT" | "PUBLISHED"
+  status: PostStatus
   createdAt: string
   updatedAt: string
   publishedAt?: string
@@ -192,7 +193,7 @@ function upsertPost({
   status,
 }: {
   payload: DraftPostRequest | PublishPostRequest
-  status: "DRAFT" | "PUBLISHED"
+  status: PostStatus
 }): PostSaveResponse {
   const store = getStore()
   const existing = payload.postId ? store.posts.get(payload.postId) : undefined

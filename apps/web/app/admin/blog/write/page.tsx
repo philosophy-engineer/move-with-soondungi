@@ -1,5 +1,3 @@
-import { EditorClient } from "@/components/blog-editor/editor-client"
+import { BlogWritePage } from "@/src/features/blog/ui/pages/blog-write-page"
 
-export default function BlogWritePage() {
-  return <EditorClient />
-}
+export default BlogWritePage

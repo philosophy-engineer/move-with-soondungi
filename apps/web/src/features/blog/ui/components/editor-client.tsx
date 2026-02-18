@@ -12,51 +12,26 @@ import { EditorContent, useEditor } from "@tiptap/react"
 import { useRouter } from "next/navigation"
 import { toast } from "sonner"
 
-import { Button } from "@workspace/ui/components/button"
-import { Input } from "@workspace/ui/components/input"
-
-import { Toolbar } from "@/components/blog-editor/toolbar"
 import {
   ALLOWED_IMAGE_MIME_TYPES,
   type AllowedImageMimeType,
+  draftPostRequestSchema,
   hasMeaningfulBody,
   MAX_IMAGE_SIZE_BYTES,
-  type CompleteUploadResponse,
-  type PostSaveResponse,
-  type PresignUploadResponse,
-} from "@/lib/blog-types"
+  publishPostRequestSchema,
+  type JsonContent,
+} from "@workspace/shared/blog"
+import { Button } from "@workspace/ui/components/button"
+import { Input } from "@workspace/ui/components/input"
 
-async function parseErrorMessage(response: Response) {
-  try {
-    const data = (await response.json()) as { message?: string }
-    if (data.message) {
-      return data.message
-    }
-  } catch {
-    // no-op
-  }
-
-  return "요청 처리 중 오류가 발생했습니다."
-}
-
-async function postJson<TResponse>(
-  url: string,
-  payload: Record<string, unknown>
-): Promise<TResponse> {
-  const response = await fetch(url, {
-    method: "POST",
-    headers: {
-      "content-type": "application/json",
-    },
-    body: JSON.stringify(payload),
-  })
-
-  if (!response.ok) {
-    throw new Error(await parseErrorMessage(response))
-  }
-
-  return (await response.json()) as TResponse
-}
+import {
+  publishBlogPost,
+  saveDraftPost,
+  uploadEditorImage,
+} from "@/src/features/blog/model/blog-queries"
+import { Toolbar } from "@/src/features/blog/ui/components/toolbar"
+import { appRoutes } from "@/src/shared/config/routes"
+import { toErrorMessage } from "@/src/shared/lib/response"
 
 function toReadableDate(date: Date) {
   return new Intl.DateTimeFormat("ko-KR", {
@@ -128,43 +103,12 @@ export function EditorClient() {
     try {
       setIsUploadingImage(true)
 
-      const presign = await postJson<PresignUploadResponse>(
-        "/api/mock/uploads/presign",
-        {
-          filename: file.name,
-          mimeType: file.type,
-          size: file.size,
-        }
-      )
-
-      const uploadResponse = await fetch(presign.uploadUrl, {
-        method: "PUT",
-        headers: {
-          "content-type": file.type,
-        },
-        body: file,
-      })
-
-      if (!uploadResponse.ok) {
-        throw new Error(await parseErrorMessage(uploadResponse))
-      }
-
-      const complete = await postJson<CompleteUploadResponse>(
-        "/api/mock/uploads/complete",
-        {
-          fileKey: presign.fileKey,
-          completeToken: presign.completeToken,
-        }
-      )
+      const complete = await uploadEditorImage(file)
 
       editor?.chain().focus().setImage({ src: complete.url, alt: file.name }).run()
       toast.success("이미지가 추가되었습니다.")
     } catch (error) {
-      const message =
-        error instanceof Error
-          ? error.message
-          : "이미지 업로드 중 오류가 발생했습니다."
-      toast.error(message)
+      toast.error(toErrorMessage(error, "이미지 업로드 중 오류가 발생했습니다."))
     } finally {
       setIsUploadingImage(false)
       if (imageInputRef.current) {
@@ -180,7 +124,7 @@ export function EditorClient() {
 
     const trimmedTitle = title.trim()
     const contentHtml = editor.getHTML()
-    const contentJson = editor.getJSON()
+    const contentJson = editor.getJSON() as JsonContent
 
     if (!trimmedTitle) {
       toast.error("제목을 입력해주세요.")
@@ -195,31 +139,34 @@ export function EditorClient() {
     try {
       if (mode === "draft") {
         setIsSavingDraft(true)
+        const payload = draftPostRequestSchema.parse({
+          postId: postId ?? undefined,
+          title: trimmedTitle,
+          contentHtml,
+          contentJson,
+        })
+        const result = await saveDraftPost(payload)
+        setPostId(result.postId)
       } else {
         setIsPublishing(true)
+        const payload = publishPostRequestSchema.parse({
+          postId: postId ?? undefined,
+          title: trimmedTitle,
+          contentHtml,
+          contentJson,
+        })
+        const result = await publishBlogPost(payload)
+        setPostId(result.postId)
       }
 
-      const endpoint =
-        mode === "draft" ? "/api/mock/posts/draft" : "/api/mock/posts/publish"
-
-      const result = await postJson<PostSaveResponse>(endpoint, {
-        postId: postId ?? undefined,
-        title: trimmedTitle,
-        contentHtml,
-        contentJson,
-      })
-
-      setPostId(result.postId)
       setLastSavedAt(new Date())
 
       toast.success(mode === "draft" ? "초안을 저장했습니다." : "게시글을 발행했습니다.")
 
-      router.push("/admin/blog")
+      router.push(appRoutes.adminBlog)
       router.refresh()
     } catch (error) {
-      const message =
-        error instanceof Error ? error.message : "저장 처리 중 오류가 발생했습니다."
-      toast.error(message)
+      toast.error(toErrorMessage(error, "저장 처리 중 오류가 발생했습니다."))
     } finally {
       if (mode === "draft") {
         setIsSavingDraft(false)

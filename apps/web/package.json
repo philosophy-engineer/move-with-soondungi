@@ -4,7 +4,9 @@
   "type": "module",
   "private": true,
   "scripts": {
+    "predev": "pnpm --filter @workspace/shared build",
     "dev": "next dev --turbopack",
+    "prebuild": "pnpm --filter @workspace/shared build",
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
@@ -19,13 +21,15 @@
     "@tiptap/extension-underline": "^3.11.0",
     "@tiptap/react": "^3.11.0",
     "@tiptap/starter-kit": "^3.11.0",
+    "@workspace/shared": "workspace:*",
     "@workspace/ui": "workspace:*",
     "lucide-react": "^0.563.0",
     "next": "16.1.6",
     "next-themes": "^0.4.6",
     "react": "^19.2.4",
     "react-dom": "^19.2.4",
-    "sonner": "^2.0.7"
+    "sonner": "^2.0.7",
+    "zod": "^3.25.76"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4.1.18",
