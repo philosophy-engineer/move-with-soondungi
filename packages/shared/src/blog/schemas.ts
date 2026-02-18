@@ -1,4 +1,8 @@
 import { z } from "zod";
+import {
+  cursorPageQuerySchema,
+  cursorPageResponseSchema,
+} from "../common/pagination/cursor/schemas.js";
 
 export const postStatusSchema = z.enum(["DRAFT", "PUBLISHED"]);
 
@@ -58,12 +62,6 @@ export const postFeedItemSchema = z.object({
   publishedAt: z.string(),
 });
 
-export const listPublicPostsQuerySchema = z.object({
-  cursor: z.string().optional(),
-  limit: z.coerce.number().int().min(1).max(30).default(10),
-});
+export const listPublicPostsQuerySchema = cursorPageQuerySchema;
 
-export const listPublicPostsResponseSchema = z.object({
-  items: z.array(postFeedItemSchema),
-  nextCursor: z.string().nullable(),
-});
+export const listPublicPostsResponseSchema = cursorPageResponseSchema(postFeedItemSchema);
