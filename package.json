@@ -13,8 +13,20 @@
     "*": [
       "prettier --write --ignore-unknown"
     ],
-    "*.{ts,tsx,js,jsx}": [
-      "eslint --max-warnings 0"
+    "apps/server/**/*.{ts,tsx,js,jsx}": [
+      "pnpm --dir apps/server exec eslint --max-warnings 0"
+    ],
+    "apps/web/**/*.{ts,tsx,js,jsx}": [
+      "pnpm --dir apps/web exec eslint --max-warnings 0"
+    ],
+    "packages/shared/**/*.{ts,tsx,js,jsx}": [
+      "pnpm --dir packages/shared exec eslint --max-warnings 0"
+    ],
+    "packages/ui/**/*.{ts,tsx,js,jsx}": [
+      "pnpm --dir packages/ui exec eslint --max-warnings 0"
+    ],
+    "packages/eslint-config/**/*.{ts,tsx,js,jsx}": [
+      "pnpm --dir packages/eslint-config exec eslint --max-warnings 0"
     ]
   },
   "devDependencies": {
@@ -22,6 +34,7 @@
     "@commitlint/config-conventional": "^20.4.1",
     "@workspace/eslint-config": "workspace:*",
     "@workspace/typescript-config": "workspace:*",
+    "eslint": "catalog:",
     "lefthook": "^2.1.1",
     "lint-staged": "^16.2.7",
     "prettier": "catalog:",
