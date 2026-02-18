@@ -1,11 +1,18 @@
 {
   "$schema": "https://turbo.build/schema.json",
   "ui": "tui",
+  "globalEnv": [
+    "NODE_ENV",
+    "NEXT_PUBLIC_API_BASE_URL",
+    "PORT",
+    "SERVER_PUBLIC_ORIGIN",
+    "WEB_ORIGIN"
+  ],
   "tasks": {
     "build": {
       "dependsOn": ["^build"],
       "inputs": ["$TURBO_DEFAULT$", ".env*"],
-      "outputs": [".next/**", "!.next/cache/**"]
+      "outputs": [".next/**", "dist/**", "!.next/cache/**"]
     },
     "lint": {
       "dependsOn": ["^lint"]
