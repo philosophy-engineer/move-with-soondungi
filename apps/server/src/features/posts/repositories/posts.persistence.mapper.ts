@@ -1,15 +1,15 @@
-import { Post } from "../entities/post.entity.js"
+import { Post } from "../entities/post.entity.js";
 
 export type PostRecord = {
-  postId: string
-  title: string
-  contentHtml: string
-  contentJson: unknown
-  status: "DRAFT" | "PUBLISHED"
-  createdAt: string
-  updatedAt: string
-  publishedAt?: string
-}
+  postId: string;
+  title: string;
+  contentHtml: string;
+  contentJson: unknown;
+  status: "DRAFT" | "PUBLISHED";
+  createdAt: string;
+  updatedAt: string;
+  publishedAt?: string;
+};
 
 export function toPostRecord(post: Post): PostRecord {
   return {
@@ -21,7 +21,7 @@ export function toPostRecord(post: Post): PostRecord {
     createdAt: post.createdAt,
     updatedAt: post.updatedAt,
     publishedAt: post.publishedAt,
-  }
+  };
 }
 
 export function toPostEntity(record: PostRecord): Post {
@@ -34,5 +34,5 @@ export function toPostEntity(record: PostRecord): Post {
     createdAt: record.createdAt,
     updatedAt: record.updatedAt,
     publishedAt: record.publishedAt,
-  })
+  });
 }

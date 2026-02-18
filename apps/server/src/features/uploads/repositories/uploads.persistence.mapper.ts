@@ -1,24 +1,24 @@
-import { UploadSession } from "../entities/upload-session.entity.js"
-import { UploadedImage } from "../entities/uploaded-image.entity.js"
+import { UploadSession } from "../entities/upload-session.entity.js";
+import { UploadedImage } from "../entities/uploaded-image.entity.js";
 
 export type UploadSessionRecord = {
-  fileKey: string
-  filename: string
-  mimeType: string
-  size: number
-  completeToken: string
-  expiresAtMs: number
-  uploadedData?: ArrayBuffer
-  uploadedMimeType?: string
-}
+  fileKey: string;
+  filename: string;
+  mimeType: string;
+  size: number;
+  completeToken: string;
+  expiresAtMs: number;
+  uploadedData?: ArrayBuffer;
+  uploadedMimeType?: string;
+};
 
 export type UploadedImageRecord = {
-  imageId: string
-  fileKey: string
-  mimeType: string
-  bytes: ArrayBuffer
-  createdAt: string
-}
+  imageId: string;
+  fileKey: string;
+  mimeType: string;
+  bytes: ArrayBuffer;
+  createdAt: string;
+};
 
 export function toUploadSessionRecord(entity: UploadSession): UploadSessionRecord {
   return {
@@ -30,7 +30,7 @@ export function toUploadSessionRecord(entity: UploadSession): UploadSessionRecor
     expiresAtMs: entity.expiresAtMs,
     uploadedData: entity.uploadedData,
     uploadedMimeType: entity.uploadedMimeType,
-  }
+  };
 }
 
 export function toUploadSessionEntity(record: UploadSessionRecord): UploadSession {
@@ -43,7 +43,7 @@ export function toUploadSessionEntity(record: UploadSessionRecord): UploadSessio
     expiresAtMs: record.expiresAtMs,
     uploadedData: record.uploadedData,
     uploadedMimeType: record.uploadedMimeType,
-  })
+  });
 }
 
 export function toUploadedImageRecord(entity: UploadedImage): UploadedImageRecord {
@@ -53,7 +53,7 @@ export function toUploadedImageRecord(entity: UploadedImage): UploadedImageRecor
     mimeType: entity.mimeType,
     bytes: entity.bytes,
     createdAt: entity.createdAt,
-  }
+  };
 }
 
 export function toUploadedImageEntity(record: UploadedImageRecord): UploadedImage {
@@ -63,5 +63,5 @@ export function toUploadedImageEntity(record: UploadedImageRecord): UploadedImag
     mimeType: record.mimeType,
     bytes: record.bytes,
     createdAt: record.createdAt,
-  })
+  });
 }
