@@ -4,6 +4,7 @@ import { cache } from "react";
 
 import { fetchPublicPostDetail } from "@/src/features/posts/model/post-client";
 import { PostDetailPage } from "@/src/features/posts/ui/pages/post-detail-page";
+import { SITE_NAME } from "@/src/shared/config/branding";
 import { HttpRequestError } from "@/src/shared/lib/http";
 
 type PostDetailPageParams = {
@@ -13,8 +14,6 @@ type PostDetailPageParams = {
 type PostDetailRouteProps = {
   params: Promise<PostDetailPageParams>;
 };
-
-const SITE_NAME = "순둥이 이사";
 
 const getCachedPostDetail = cache(async (slug: string) => {
   return fetchPublicPostDetail(slug);

@@ -8,6 +8,7 @@ import { toast } from "sonner";
 
 import { Button } from "@workspace/ui/components/button";
 import { fetchAdminMe, logoutAdmin } from "@/src/features/auth/model/auth-client";
+import { SITE_NAME } from "@/src/shared/config/branding";
 import { appRoutes } from "@/src/shared/config/routes";
 import { toErrorMessage } from "@/src/shared/lib/response";
 
@@ -61,7 +62,7 @@ export function HomeHeader() {
               className="inline-flex size-8 items-center justify-center rounded-md bg-zinc-900"
             />
             <span className="text-lg font-bold tracking-tight text-zinc-900 sm:text-2xl">
-              순둥이 이사
+              {SITE_NAME}
             </span>
           </Link>
         </div>
