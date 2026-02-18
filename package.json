@@ -6,11 +6,24 @@
     "build": "turbo build",
     "dev": "turbo dev",
     "lint": "turbo lint",
-    "format": "prettier --write \"**/*.{ts,tsx,md}\""
+    "format": "prettier --write \"**/*.{ts,tsx,md}\"",
+    "prepare": "lefthook install"
+  },
+  "lint-staged": {
+    "*": [
+      "prettier --write --ignore-unknown"
+    ],
+    "*.{ts,tsx,js,jsx}": [
+      "eslint --max-warnings 0"
+    ]
   },
   "devDependencies": {
+    "@commitlint/cli": "^20.4.1",
+    "@commitlint/config-conventional": "^20.4.1",
     "@workspace/eslint-config": "workspace:*",
     "@workspace/typescript-config": "workspace:*",
+    "lefthook": "^2.1.1",
+    "lint-staged": "^16.2.7",
     "prettier": "catalog:",
     "turbo": "catalog:",
     "typescript": "catalog:"
