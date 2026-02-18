@@ -55,13 +55,15 @@ export function HomeHeader() {
     <header className="sticky top-0 z-30 border-b border-zinc-200 bg-zinc-100/95 backdrop-blur">
       <div className="mx-auto flex h-16 w-full max-w-290 items-center justify-between px-4 sm:px-6">
         <div className="flex items-center gap-3">
-          <span
-            aria-hidden
-            className="inline-flex size-8 items-center justify-center rounded-md bg-zinc-900"
-          />
-          <span className="text-lg font-bold tracking-tight text-zinc-900 sm:text-2xl">
-            순둥이 이사
-          </span>
+          <Link href={appRoutes.home} className="flex items-center gap-3">
+            <span
+              aria-hidden
+              className="inline-flex size-8 items-center justify-center rounded-md bg-zinc-900"
+            />
+            <span className="text-lg font-bold tracking-tight text-zinc-900 sm:text-2xl">
+              순둥이 이사
+            </span>
+          </Link>
         </div>
 
         <div className="flex items-center gap-1 sm:gap-2">
