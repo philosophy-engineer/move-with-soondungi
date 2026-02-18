@@ -4,7 +4,10 @@ import { ALLOWED_IMAGE_MIME_TYPES } from "./constants.js";
 import type {
   draftPostRequestSchema,
   jsonContentSchema,
+  listPublicPostsQuerySchema,
+  listPublicPostsResponseSchema,
   listPostsResponseSchema,
+  postFeedItemSchema,
   postSaveResponseSchema,
   postStatusSchema,
   postSummarySchema,
@@ -19,5 +22,8 @@ export type PublishPostRequest = z.infer<typeof publishPostRequestSchema>;
 export type PostSaveResponse = z.infer<typeof postSaveResponseSchema>;
 export type PostSummary = z.infer<typeof postSummarySchema>;
 export type ListPostsResponse = z.infer<typeof listPostsResponseSchema>;
+export type PostFeedItem = z.infer<typeof postFeedItemSchema>;
+export type ListPublicPostsQuery = z.infer<typeof listPublicPostsQuerySchema>;
+export type ListPublicPostsResponse = z.infer<typeof listPublicPostsResponseSchema>;
 
 export type AllowedImageMimeType = (typeof ALLOWED_IMAGE_MIME_TYPES)[number];

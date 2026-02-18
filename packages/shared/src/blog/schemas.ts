@@ -49,3 +49,21 @@ export const postSummarySchema = z.object({
 export const listPostsResponseSchema = z.object({
   items: z.array(postSummarySchema),
 });
+
+export const postFeedItemSchema = z.object({
+  slug: z.string(),
+  title: z.string(),
+  summary: z.string(),
+  thumbnailUrl: z.string().nullable(),
+  publishedAt: z.string(),
+});
+
+export const listPublicPostsQuerySchema = z.object({
+  cursor: z.string().optional(),
+  limit: z.coerce.number().int().min(1).max(30).default(10),
+});
+
+export const listPublicPostsResponseSchema = z.object({
+  items: z.array(postFeedItemSchema),
+  nextCursor: z.string().nullable(),
+});
