@@ -3,7 +3,7 @@ import { Module } from "@nestjs/common"
 import { UploadsController } from "./controllers/uploads.controller.js"
 import { UploadsInMemoryRepository } from "./repositories/uploads.in-memory.repository.js"
 import { UPLOADS_REPOSITORY } from "./repositories/uploads.repository.js"
-import { UploadsService } from "./uploads.service.js"
+import { UploadsService } from "./services/uploads.service.js"
 
 @Module({
   controllers: [UploadsController],

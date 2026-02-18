@@ -1,32 +1,13 @@
-import type {
-  CompleteUploadRequest,
-  CompleteUploadResponse,
-  PresignUploadRequest,
-  PresignUploadResponse,
-} from "@workspace/shared/upload"
+import type { UploadSession } from "../entities/upload-session.entity.js"
+import type { UploadedImage } from "../entities/uploaded-image.entity.js"
 
 export const UPLOADS_REPOSITORY = Symbol("UPLOADS_REPOSITORY")
 
-export type StoredImage = {
-  imageId: string
-  mimeType: string
-  bytes: ArrayBuffer
-}
-
 export interface UploadsRepository {
-  createPresignedUpload(
-    payload: PresignUploadRequest,
-    serverPublicOrigin: string
-  ): PresignUploadResponse
-  saveUploadBlob(params: {
-    fileKey: string
-    token: string
-    data: ArrayBuffer
-    contentType?: string
-  }): void
-  completeUpload(
-    payload: CompleteUploadRequest,
-    serverPublicOrigin: string
-  ): CompleteUploadResponse
-  getImageById(imageId: string): StoredImage | undefined
+  saveSession(session: UploadSession): UploadSession
+  findSessionByFileKey(fileKey: string): UploadSession | undefined
+  saveImage(image: UploadedImage): UploadedImage
+  findImageById(imageId: string): UploadedImage | undefined
+  findImageIdByFileKey(fileKey: string): string | undefined
+  saveImageLink(fileKey: string, imageId: string): void
 }

@@ -2,7 +2,6 @@ import {
   Body,
   Controller,
   Get,
-  HttpException,
   HttpCode,
   Param,
   Post,
@@ -12,25 +11,22 @@ import {
   Res,
 } from "@nestjs/common"
 import {
-  ALLOWED_IMAGE_MIME_TYPES,
-  type AllowedImageMimeType,
-  MAX_IMAGE_SIZE_BYTES,
-} from "@workspace/shared/blog"
-import {
   completeUploadRequestSchema,
   completeUploadResponseSchema,
   presignUploadRequestSchema,
   presignUploadResponseSchema,
+  type CompleteUploadRequest,
+  type PresignUploadRequest,
 } from "@workspace/shared/upload"
 import type { Request, Response } from "express"
-import { ZodError } from "zod"
 
 import {
   throwBadRequest,
   throwNotFound,
 } from "../../../common/errors/error-response.js"
+import { ZodValidationPipe } from "../../../common/pipes/zod-validation.pipe.js"
 import { waitMockDelay } from "../../../common/utils/mock.js"
-import { UploadsService } from "../uploads.service.js"
+import { UploadsService } from "../services/uploads.service.js"
 
 async function readRequestBodyAsArrayBuffer(request: Request): Promise<ArrayBuffer> {
   const chunks: Buffer[] = []
@@ -49,58 +45,14 @@ export class UploadsController {
 
   @Post("presign")
   @HttpCode(200)
-  async presign(@Body() raw: unknown) {
+  async presign(
+    @Body(new ZodValidationPipe(presignUploadRequestSchema))
+    payload: PresignUploadRequest
+  ) {
     await waitMockDelay()
 
-    try {
-      const parsed = presignUploadRequestSchema.safeParse(raw)
-
-      if (!parsed.success) {
-        const payload = raw as {
-          mimeType?: unknown
-          size?: unknown
-        }
-
-        if (
-          typeof payload.mimeType === "string" &&
-          !ALLOWED_IMAGE_MIME_TYPES.includes(payload.mimeType as AllowedImageMimeType)
-        ) {
-          throwBadRequest("jpg/png/webp 형식만 업로드할 수 있습니다.")
-        }
-
-        if (
-          typeof payload.size === "number" &&
-          (payload.size <= 0 || payload.size > MAX_IMAGE_SIZE_BYTES)
-        ) {
-          throwBadRequest("이미지 용량은 10MB 이하여야 합니다.")
-        }
-
-        throwBadRequest("잘못된 요청입니다.")
-      }
-
-      const payload = parsed.data
-
-      if (payload.size <= 0 || payload.size > MAX_IMAGE_SIZE_BYTES) {
-        throwBadRequest("이미지 용량은 10MB 이하여야 합니다.")
-      }
-
-      const result = this.uploadsService.createPresignedUpload(payload)
-      return presignUploadResponseSchema.parse(result)
-    } catch (error) {
-      if (error instanceof HttpException) {
-        throw error
-      }
-
-      if (error instanceof ZodError) {
-        throwBadRequest("잘못된 요청입니다.")
-      }
-
-      if (error instanceof Error) {
-        throwBadRequest(error.message)
-      }
-
-      throwBadRequest("요청 처리 중 오류가 발생했습니다.")
-    }
+    const result = this.uploadsService.createPresignedUpload(payload)
+    return presignUploadResponseSchema.parse(result)
   }
 
   @Put("blob/:fileKey")
@@ -116,60 +68,28 @@ export class UploadsController {
       throwBadRequest("업로드 토큰이 필요합니다.")
     }
 
-    try {
-      const data = await readRequestBodyAsArrayBuffer(request)
-      const rawContentType = request.headers["content-type"]
-      const contentType =
-        typeof rawContentType === "string" ? rawContentType : undefined
+    const data = await readRequestBodyAsArrayBuffer(request)
+    const rawContentType = request.headers["content-type"]
+    const contentType = typeof rawContentType === "string" ? rawContentType : undefined
 
-      this.uploadsService.saveUploadBlob({
-        fileKey,
-        token,
-        data,
-        contentType,
-      })
-    } catch (error) {
-      if (error instanceof HttpException) {
-        throw error
-      }
-
-      if (error instanceof ZodError) {
-        throwBadRequest("잘못된 요청입니다.")
-      }
-
-      if (error instanceof Error) {
-        throwBadRequest(error.message)
-      }
-
-      throwBadRequest("업로드 처리 중 오류가 발생했습니다.")
-    }
+    this.uploadsService.saveUploadBlob({
+      fileKey,
+      token,
+      data,
+      contentType,
+    })
   }
 
   @Post("complete")
   @HttpCode(200)
-  async complete(@Body() raw: unknown) {
+  async complete(
+    @Body(new ZodValidationPipe(completeUploadRequestSchema))
+    payload: CompleteUploadRequest
+  ) {
     await waitMockDelay()
 
-    try {
-      const payload = completeUploadRequestSchema.parse(raw)
-      const result = this.uploadsService.completeUpload(payload)
-
-      return completeUploadResponseSchema.parse(result)
-    } catch (error) {
-      if (error instanceof HttpException) {
-        throw error
-      }
-
-      if (error instanceof ZodError) {
-        throwBadRequest("잘못된 요청입니다.")
-      }
-
-      if (error instanceof Error) {
-        throwBadRequest(error.message)
-      }
-
-      throwBadRequest("업로드 완료 처리 중 오류가 발생했습니다.")
-    }
+    const result = this.uploadsService.completeUpload(payload)
+    return completeUploadResponseSchema.parse(result)
   }
 
   @Get("file/:imageId")
