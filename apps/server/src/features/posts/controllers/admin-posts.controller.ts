@@ -9,17 +9,14 @@ import {
 } from "@workspace/shared/blog";
 
 import { ZodValidationPipe } from "../../../common/pipes/zod-validation.pipe.js";
-import { waitMockDelay } from "../../../common/utils/mock.js";
 import { PostsService } from "../services/posts.service.js";
 
-@Controller("api/mock/posts")
-export class PostsController {
+@Controller("api/admin/posts")
+export class AdminPostsController {
   constructor(private readonly postsService: PostsService) {}
 
   @Get()
   async listPosts() {
-    await waitMockDelay();
-
     const items = await this.postsService.listPostSummaries();
 
     return listPostsResponseSchema.parse({
@@ -30,8 +27,6 @@ export class PostsController {
   @Post("draft")
   @HttpCode(200)
   async saveDraft(@Body(new ZodValidationPipe(draftPostRequestSchema)) payload: DraftPostRequest) {
-    await waitMockDelay();
-
     const result = await this.postsService.saveDraftPost(payload);
     return postSaveResponseSchema.parse(result);
   }
@@ -42,8 +37,6 @@ export class PostsController {
     @Body(new ZodValidationPipe(publishPostRequestSchema))
     payload: PublishPostRequest,
   ) {
-    await waitMockDelay();
-
     const result = await this.postsService.publishPost(payload);
     return postSaveResponseSchema.parse(result);
   }
