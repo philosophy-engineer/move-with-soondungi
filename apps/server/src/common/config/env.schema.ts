@@ -55,6 +55,16 @@ export const envSchema = z.looseObject({
   S3_BUCKET: requiredString("S3_BUCKET"),
   S3_FORCE_PATH_STYLE: booleanString("S3_FORCE_PATH_STYLE"),
   S3_PUBLIC_BASE_URL: urlString("S3_PUBLIC_BASE_URL"),
+  DB_HOST: requiredString("DB_HOST"),
+  DB_PORT: requiredString("DB_PORT")
+    .transform((value) => Number(value))
+    .refine(
+      (value) => Number.isInteger(value) && value > 0,
+      "DB_PORT 환경변수는 양의 정수여야 합니다.",
+    ),
+  DB_USER: requiredString("DB_USER"),
+  DB_PASSWORD: requiredString("DB_PASSWORD"),
+  DB_NAME: requiredString("DB_NAME"),
 });
 
 export function validateEnv(raw: Record<string, unknown>) {
