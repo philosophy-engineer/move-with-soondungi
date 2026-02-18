@@ -13,13 +13,13 @@ export function getPostDetailRoute(slug: string): string {
 
 export const apiRoutes = {
   posts: "/api/posts",
+  adminPosts: "/api/admin/posts",
+  adminPostsDraft: "/api/admin/posts/draft",
+  adminPostsPublish: "/api/admin/posts/publish",
   postDetail: (slug: string) => `/api/posts/${encodeURIComponent(slug)}`,
   authLogin: "/api/auth/login",
   authMe: "/api/auth/me",
   authLogout: "/api/auth/logout",
-  mockPosts: "/api/mock/posts",
-  mockPostsDraft: "/api/mock/posts/draft",
-  mockPostsPublish: "/api/mock/posts/publish",
   uploadsPresign: "/api/uploads/presign",
   uploadsComplete: "/api/uploads/complete",
 } as const;

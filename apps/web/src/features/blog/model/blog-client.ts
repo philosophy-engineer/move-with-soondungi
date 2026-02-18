@@ -16,15 +16,15 @@ import { getJson, postJson } from "@/src/shared/lib/http";
 import { readErrorMessage } from "@/src/shared/lib/response";
 
 export function fetchPosts() {
-  return getJson(apiRoutes.mockPosts, listPostsResponseSchema);
+  return getJson(apiRoutes.adminPosts, listPostsResponseSchema);
 }
 
 export function saveDraft(payload: DraftPostRequest) {
-  return postJson(apiRoutes.mockPostsDraft, payload, postSaveResponseSchema);
+  return postJson(apiRoutes.adminPostsDraft, payload, postSaveResponseSchema);
 }
 
 export function publishPost(payload: PublishPostRequest) {
-  return postJson(apiRoutes.mockPostsPublish, payload, postSaveResponseSchema);
+  return postJson(apiRoutes.adminPostsPublish, payload, postSaveResponseSchema);
 }
 
 export function createUploadPresign(payload: PresignUploadRequest) {
