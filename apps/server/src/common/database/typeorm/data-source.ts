@@ -1,5 +1,6 @@
 import { existsSync, readFileSync } from "node:fs";
 import path from "node:path";
+import { fileURLToPath } from "node:url";
 
 import { DataSource } from "typeorm";
 
@@ -51,13 +52,15 @@ function loadAndValidateEnv() {
 }
 
 const env = loadAndValidateEnv();
+const currentFileExtension = path.extname(fileURLToPath(import.meta.url));
+const isTsNodeRuntime = currentFileExtension === ".ts";
+const migrationsGlob = isTsNodeRuntime
+  ? ["src/common/database/typeorm/migrations/*.ts"]
+  : ["dist/common/database/typeorm/migrations/*.js"];
 
 const AppDataSource = new DataSource({
   ...createTypeOrmDataSourceOptions(env),
-  migrations: [
-    "src/common/database/typeorm/migrations/*.{ts,js}",
-    "dist/common/database/typeorm/migrations/*.js",
-  ],
+  migrations: migrationsGlob,
 });
 
 export default AppDataSource;
