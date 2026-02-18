@@ -37,6 +37,10 @@
       "types": "./dist/common/index.d.ts",
       "import": "./dist/common/index.js"
     },
+    "./auth": {
+      "types": "./dist/auth/index.d.ts",
+      "import": "./dist/auth/index.js"
+    },
     "./upload": {
       "types": "./dist/upload/index.d.ts",
       "import": "./dist/upload/index.js"
