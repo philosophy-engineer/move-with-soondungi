@@ -13,6 +13,7 @@ import { useRouter } from "next/navigation"
 import { toast } from "sonner"
 
 import { Button } from "@workspace/ui/components/button"
+import { Input } from "@workspace/ui/components/input"
 
 import { Toolbar } from "@/components/blog-editor/toolbar"
 import {
@@ -24,8 +25,6 @@ import {
   type PostSaveResponse,
   type PresignUploadResponse,
 } from "@/lib/blog-types"
-import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@workspace/ui/components/card"
-import { Input } from "@workspace/ui/components/input"
 
 async function parseErrorMessage(response: Response) {
   try {
@@ -106,7 +105,7 @@ export function EditorClient() {
     editorProps: {
       attributes: {
         class:
-          "min-h-[420px] px-5 py-4 text-[16px] leading-8 text-slate-900 outline-none [&_h1]:mb-5 [&_h1]:text-4xl [&_h1]:font-bold [&_h2]:mb-4 [&_h2]:text-3xl [&_h2]:font-semibold [&_h3]:mb-3 [&_h3]:text-2xl [&_h3]:font-semibold [&_h4]:mb-3 [&_h4]:text-xl [&_h4]:font-semibold [&_h5]:mb-2 [&_h5]:text-lg [&_h5]:font-semibold [&_ol]:my-3 [&_ol]:list-decimal [&_ol]:pl-6 [&_ul]:my-3 [&_ul]:list-disc [&_ul]:pl-6 [&_li]:my-1 [&_p]:my-2 [&_img]:my-5 [&_img]:max-w-full [&_img]:rounded-xl [&_img]:border [&_img]:border-slate-200",
+          "min-h-[460px] px-0 py-6 text-[18px] leading-8 text-slate-900 outline-none [&_h1]:mb-5 [&_h1]:text-4xl [&_h1]:font-bold [&_h2]:mb-4 [&_h2]:text-3xl [&_h2]:font-semibold [&_h3]:mb-3 [&_h3]:text-2xl [&_h3]:font-semibold [&_h4]:mb-3 [&_h4]:text-xl [&_h4]:font-semibold [&_h5]:mb-2 [&_h5]:text-lg [&_h5]:font-semibold [&_ol]:my-3 [&_ol]:list-decimal [&_ol]:pl-6 [&_ul]:my-3 [&_ul]:list-disc [&_ul]:pl-6 [&_li]:my-1 [&_p]:my-3 [&_img]:my-5 [&_img]:max-w-full [&_img]:rounded-2xl",
       },
     },
   })
@@ -231,41 +230,37 @@ export function EditorClient() {
   }
 
   const isBusy = isSavingDraft || isPublishing || isUploadingImage
+  const isEditorEmpty = editor?.isEmpty ?? true
 
   return (
-    <main className="min-h-svh bg-gradient-to-b from-white via-slate-50 to-slate-100">
+    <main className="h-svh overflow-hidden bg-linear-to-b from-white via-slate-50 to-slate-100">
       {/* TODO: auth 도입 시 /admin/blog/* 경로는 JWT 쿠키 + me 체크 후 미로그인 시 /admin 리다이렉트 */}
-      <div className="mx-auto w-full max-w-5xl px-4 pb-28 pt-12 sm:px-6">
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-2xl">블로그 글 작성</CardTitle>
-            <CardDescription>
-              제목과 본문을 작성하고 하단에서 임시저장 또는 발행을 진행하세요.
-            </CardDescription>
-          </CardHeader>
-
-          <CardContent className="space-y-5">
-            <div className="space-y-2">
-              <p className="text-sm font-medium text-slate-700">제목</p>
-              <Input
-                value={title}
-                onChange={(event) => setTitle(event.target.value)}
-                placeholder="제목을 입력하세요"
-                className="h-12 text-base"
-              />
-            </div>
-
-            <Toolbar
-              editor={editor}
-              onPickImage={handleImagePick}
-              isUploadingImage={isUploadingImage}
+      <div className="mx-auto flex h-full w-full max-w-5xl flex-col px-4 pt-8 sm:px-6">
+        <section className="flex min-h-0 flex-1 flex-col gap-6 pb-24">
+          <div className="border-b border-slate-200 pb-4">
+            <Input
+              value={title}
+              onChange={(event) => setTitle(event.target.value)}
+              placeholder="제목을 입력하세요"
+              className="h-16 md:h-20 border-0 bg-transparent px-0 text-3xl md:text-5xl leading-[1.02] font-semibold tracking-tight text-slate-900 shadow-none placeholder:text-slate-300 focus-visible:border-transparent focus-visible:ring-0"
             />
+          </div>
 
-            <div className="overflow-hidden rounded-xl border border-slate-200 bg-white">
-              <EditorContent editor={editor} />
-            </div>
-          </CardContent>
-        </Card>
+          <Toolbar
+            editor={editor}
+            onPickImage={handleImagePick}
+            isUploadingImage={isUploadingImage}
+          />
+
+          <div className="relative min-h-0 flex-1 overflow-y-auto pr-1">
+            {isEditorEmpty ? (
+              <p className="pointer-events-none absolute left-0 top-9 text-lg text-slate-400">
+                여기를 클릭해서 글을 작성해 주세요
+              </p>
+            ) : null}
+            <EditorContent editor={editor} />
+          </div>
+        </section>
       </div>
 
       <div className="fixed inset-x-0 bottom-0 border-t border-slate-200 bg-white/95 backdrop-blur">
