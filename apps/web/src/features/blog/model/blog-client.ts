@@ -16,19 +16,27 @@ import { getJson, postJson } from "@/src/shared/lib/http";
 import { readErrorMessage } from "@/src/shared/lib/response";
 
 export function fetchPosts() {
-  return getJson(apiRoutes.adminPosts, listPostsResponseSchema);
+  return getJson(apiRoutes.adminPosts, listPostsResponseSchema, {
+    credentials: "include",
+  });
 }
 
 export function saveDraft(payload: DraftPostRequest) {
-  return postJson(apiRoutes.adminPostsDraft, payload, postSaveResponseSchema);
+  return postJson(apiRoutes.adminPostsDraft, payload, postSaveResponseSchema, {
+    credentials: "include",
+  });
 }
 
 export function publishPost(payload: PublishPostRequest) {
-  return postJson(apiRoutes.adminPostsPublish, payload, postSaveResponseSchema);
+  return postJson(apiRoutes.adminPostsPublish, payload, postSaveResponseSchema, {
+    credentials: "include",
+  });
 }
 
 export function createUploadPresign(payload: PresignUploadRequest) {
-  return postJson(apiRoutes.uploadsPresign, payload, presignUploadResponseSchema);
+  return postJson(apiRoutes.uploadsPresign, payload, presignUploadResponseSchema, {
+    credentials: "include",
+  });
 }
 
 export async function uploadBlob(uploadUrl: string, file: File) {
@@ -46,5 +54,7 @@ export async function uploadBlob(uploadUrl: string, file: File) {
 }
 
 export function completeUpload(payload: CompleteUploadRequest) {
-  return postJson(apiRoutes.uploadsComplete, payload, completeUploadResponseSchema);
+  return postJson(apiRoutes.uploadsComplete, payload, completeUploadResponseSchema, {
+    credentials: "include",
+  });
 }
