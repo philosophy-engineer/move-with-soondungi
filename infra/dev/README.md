@@ -23,14 +23,25 @@ docker compose -f infra/dev/docker-compose.yml --env-file infra/dev/.env up -d
 - PGAdmin
   - URL: `http://localhost:5050`
   - Email/Password: `PGADMIN_DEFAULT_EMAIL`, `PGADMIN_DEFAULT_PASSWORD`
-- MinIO API
-  - URL: `http://localhost:9000`
-- MinIO Console
-  - URL: `http://localhost:9001`
-  - ID/PW: `MINIO_ROOT_USER`, `MINIO_ROOT_PASSWORD`
-  - Bucket: `MINIO_BUCKET` (auto-created by `minio-init`)
+- S3 API (MinIO)
+  - URL: `http://localhost:9000` (or `S3_API_PORT`)
+- S3 Console (MinIO)
+  - URL: `http://localhost:9001` (or `S3_CONSOLE_PORT`)
+  - Access key / Secret key: `S3_ACCESS_KEY_ID`, `S3_SECRET_ACCESS_KEY`
+  - Bucket: `S3_BUCKET` (auto-created by `minio-init`)
 
-## 4) Stop / Cleanup
+## 4) CORS and public-read policy
+
+`minio-init` configures these automatically for local development:
+
+- Bucket auto-create (`S3_BUCKET`)
+- Public read (`mc anonymous set download`)
+- CORS allow origin: `S3_WEB_ORIGIN`
+- CORS methods: `GET`, `PUT`, `HEAD`
+
+For AWS S3 / Cloudflare R2, apply equivalent CORS and public-read policy through each provider's bucket settings.
+
+## 5) Stop / Cleanup
 
 ```bash
 docker compose -f infra/dev/docker-compose.yml --env-file infra/dev/.env down
