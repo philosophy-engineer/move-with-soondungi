@@ -1,4 +1,4 @@
-import { Body, Controller, HttpCode, Post } from "@nestjs/common";
+import { Body, Controller, HttpCode, Post, UseGuards } from "@nestjs/common";
 import {
   completeUploadRequestSchema,
   completeUploadResponseSchema,
@@ -10,10 +10,12 @@ import {
 
 import { ZodValidationPipe } from "../../../common/pipes/zod-validation.pipe.js";
 import { waitMockDelay } from "../../../common/utils/mock.js";
+import { AuthGuard } from "../../auth/guards/auth.guard.js";
 import { UploadsService } from "../services/uploads.service.js";
 
-@Controller("api/uploads")
-export class UploadsController {
+@Controller("api/admin/uploads")
+@UseGuards(AuthGuard)
+export class AdminUploadsController {
   constructor(private readonly uploadsService: UploadsService) {}
 
   @Post("presign")

@@ -1,7 +1,8 @@
 import { Module } from "@nestjs/common";
 import { TypeOrmModule } from "@nestjs/typeorm";
 
-import { UploadsController } from "./controllers/uploads.controller.js";
+import { AuthModule } from "../auth/auth.module.js";
+import { AdminUploadsController } from "./controllers/admin-uploads.controller.js";
 import { UPLOADS_REPOSITORY } from "./repositories/uploads.repository.js";
 import { UploadsS3Repository } from "./repositories/uploads.s3.repository.js";
 import { UploadSessionOrmEntity } from "./repositories/typeorm/entities/upload-session.orm-entity.js";
@@ -10,8 +11,8 @@ import { UploadsTypeormRepository } from "./repositories/uploads.typeorm.reposit
 import { UploadsService } from "./services/uploads.service.js";
 
 @Module({
-  imports: [TypeOrmModule.forFeature([UploadSessionOrmEntity, UploadedImageOrmEntity])],
-  controllers: [UploadsController],
+  imports: [TypeOrmModule.forFeature([UploadSessionOrmEntity, UploadedImageOrmEntity]), AuthModule],
+  controllers: [AdminUploadsController],
   providers: [
     UploadsService,
     UploadsS3Repository,
