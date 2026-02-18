@@ -24,6 +24,7 @@ import {
 import { Button } from "@workspace/ui/components/button";
 import { Input } from "@workspace/ui/components/input";
 
+import { useAdminAuthGuard } from "@/src/features/auth/model/use-admin-auth-guard";
 import {
   publishBlogPost,
   saveDraftPost,
@@ -41,6 +42,7 @@ function toReadableDate(date: Date) {
 }
 
 export function EditorClient() {
+  const { isCheckingAuth } = useAdminAuthGuard();
   const router = useRouter();
   const imageInputRef = useRef<HTMLInputElement | null>(null);
 
@@ -179,9 +181,18 @@ export function EditorClient() {
   const isBusy = isSavingDraft || isPublishing || isUploadingImage;
   const isEditorEmpty = editor?.isEmpty ?? true;
 
+  if (isCheckingAuth) {
+    return (
+      <main className="h-svh overflow-hidden bg-linear-to-b from-white via-slate-50 to-slate-100">
+        <div className="mx-auto flex h-full w-full max-w-5xl items-center px-4 text-sm text-slate-500 sm:px-6">
+          인증 상태를 확인하는 중...
+        </div>
+      </main>
+    );
+  }
+
   return (
     <main className="h-svh overflow-hidden bg-linear-to-b from-white via-slate-50 to-slate-100">
-      {/* TODO: auth 도입 시 /admin/blog/* 경로는 JWT 쿠키 + me 체크 후 미로그인 시 /admin 리다이렉트 */}
       <div className="mx-auto flex h-full w-full max-w-5xl flex-col px-4 pt-8 sm:px-6">
         <section className="flex min-h-0 flex-1 flex-col gap-6 pb-8">
           <div className="border-b border-slate-200 pb-4">

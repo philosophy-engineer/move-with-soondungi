@@ -16,6 +16,7 @@ import {
 } from "@workspace/ui/components/card";
 import { cn } from "@workspace/ui/lib/utils";
 
+import { useAdminAuthGuard } from "@/src/features/auth/model/use-admin-auth-guard";
 import { fetchPostSummaries } from "@/src/features/blog/model/blog-queries";
 import {
   formatDateKo,
@@ -27,10 +28,15 @@ import { appRoutes } from "@/src/shared/config/routes";
 import type { PostSummary } from "@workspace/shared/blog";
 
 export function AdminBlogPage() {
+  const { isCheckingAuth } = useAdminAuthGuard();
   const [items, setItems] = useState<PostSummary[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
+    if (isCheckingAuth) {
+      return;
+    }
+
     let isMounted = true;
 
     async function load() {
@@ -56,11 +62,20 @@ export function AdminBlogPage() {
     return () => {
       isMounted = false;
     };
-  }, []);
+  }, [isCheckingAuth]);
+
+  if (isCheckingAuth) {
+    return (
+      <main className="min-h-svh bg-linear-to-b from-white via-slate-50 to-slate-100">
+        <div className="mx-auto w-full max-w-5xl px-4 py-12 text-sm text-slate-500 sm:px-6">
+          인증 상태를 확인하는 중...
+        </div>
+      </main>
+    );
+  }
 
   return (
     <main className="min-h-svh bg-linear-to-b from-white via-slate-50 to-slate-100">
-      {/* TODO: auth 도입 시 /admin/blog/* 경로는 JWT 쿠키 + me 체크 후 미로그인 시 /admin 리다이렉트 */}
       <div className="mx-auto w-full max-w-5xl px-4 py-12 sm:px-6">
         <div className="mb-6 flex items-center justify-between gap-4">
           <div>

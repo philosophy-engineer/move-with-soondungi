@@ -1,6 +1,8 @@
+import Link from "next/link";
 import { Bell, Search } from "lucide-react";
 
 import { Button } from "@workspace/ui/components/button";
+import { appRoutes } from "@/src/shared/config/routes";
 
 export function HomeHeader() {
   return (
@@ -24,10 +26,11 @@ export function HomeHeader() {
             <Search />
           </Button>
           <Button
+            asChild
             variant="default"
             className="h-9 rounded-full bg-zinc-900 px-4 text-sm font-semibold text-white hover:bg-zinc-800"
           >
-            로그인
+            <Link href={appRoutes.adminLogin}>로그인</Link>
           </Button>
         </div>
       </div>
