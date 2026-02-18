@@ -236,7 +236,7 @@ export function EditorClient() {
     <main className="h-svh overflow-hidden bg-linear-to-b from-white via-slate-50 to-slate-100">
       {/* TODO: auth 도입 시 /admin/blog/* 경로는 JWT 쿠키 + me 체크 후 미로그인 시 /admin 리다이렉트 */}
       <div className="mx-auto flex h-full w-full max-w-5xl flex-col px-4 pt-8 sm:px-6">
-        <section className="flex min-h-0 flex-1 flex-col gap-6 pb-24">
+        <section className="flex min-h-0 flex-1 flex-col gap-6 pb-8">
           <div className="border-b border-slate-200 pb-4">
             <Input
               value={title}
@@ -260,35 +260,35 @@ export function EditorClient() {
             ) : null}
             <EditorContent editor={editor} />
           </div>
-        </section>
-      </div>
 
-      <div className="fixed inset-x-0 bottom-0 border-t border-slate-200 bg-white/95 backdrop-blur">
-        <div className="mx-auto flex w-full max-w-5xl items-center justify-between gap-4 px-4 py-3 sm:px-6">
-          <p className="text-sm text-slate-500">
-            {lastSavedAt
-              ? `마지막 저장: ${toReadableDate(lastSavedAt)}`
-              : "아직 저장되지 않았습니다."}
-          </p>
+          <div className="flex items-center justify-between gap-4">
+            <p className="text-sm text-slate-500">
+              {lastSavedAt
+                ? `마지막 저장: ${toReadableDate(lastSavedAt)}`
+                : "아직 저장되지 않았습니다."}
+            </p>
 
-          <div className="flex items-center gap-2">
-            <Button
-              type="button"
-              variant="outline"
-              disabled={isBusy}
-              onClick={() => submitPost("draft")}
-            >
-              {isSavingDraft ? "저장 중..." : "임시저장"}
-            </Button>
-            <Button
-              type="button"
-              disabled={isBusy}
-              onClick={() => submitPost("publish")}
-            >
-              {isPublishing ? "발행 중..." : "발행하기"}
-            </Button>
+            <div className="flex items-center gap-3">
+              <Button
+                type="button"
+                variant="outline"
+                disabled={isBusy}
+                className="h-11 px-6 text-base"
+                onClick={() => submitPost("draft")}
+              >
+                {isSavingDraft ? "저장 중..." : "임시저장"}
+              </Button>
+              <Button
+                type="button"
+                disabled={isBusy}
+                className="h-11 px-6 text-base"
+                onClick={() => submitPost("publish")}
+              >
+                {isPublishing ? "발행 중..." : "발행하기"}
+              </Button>
+            </div>
           </div>
-        </div>
+        </section>
       </div>
 
       <input
