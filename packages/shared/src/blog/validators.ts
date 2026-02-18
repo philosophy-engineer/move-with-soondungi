@@ -1,34 +1,31 @@
-import type { JsonContent } from "./types.js"
+import type { JsonContent } from "./types.js";
 
 export function hasNodeType(node: unknown, type: string): boolean {
   if (typeof node !== "object" || node === null) {
-    return false
+    return false;
   }
 
   const typedNode = node as {
-    type?: unknown
-    content?: unknown
-  }
+    type?: unknown;
+    content?: unknown;
+  };
 
   if (typedNode.type === type) {
-    return true
+    return true;
   }
 
   if (!Array.isArray(typedNode.content)) {
-    return false
+    return false;
   }
 
-  return typedNode.content.some((child) => hasNodeType(child, type))
+  return typedNode.content.some((child) => hasNodeType(child, type));
 }
 
-export function hasMeaningfulBody(
-  contentHtml: string,
-  contentJson: JsonContent
-): boolean {
+export function hasMeaningfulBody(contentHtml: string, contentJson: JsonContent): boolean {
   const text = contentHtml
     .replace(/<[^>]*>/g, "")
     .replace(/&nbsp;/g, " ")
-    .trim()
+    .trim();
 
-  return text.length > 0 || hasNodeType(contentJson, "image")
+  return text.length > 0 || hasNodeType(contentJson, "image");
 }
