@@ -1,4 +1,5 @@
 import type { PublicPostDetail } from "@workspace/shared/blog";
+import { MAIN_CONTAINER_CLASS } from "@/src/shared/config/layout";
 import { formatDateKoYmd } from "@/src/shared/lib/date";
 
 type PostDetailPageProps = {
@@ -8,9 +9,9 @@ type PostDetailPageProps = {
 export function PostDetailPage({ post }: PostDetailPageProps) {
   return (
     <main className="min-h-[calc(100svh-4rem)] bg-zinc-100 py-10 sm:py-14">
-      <article className="mx-auto w-full max-w-245 px-4 pb-20 sm:px-6">
+      <article className={`${MAIN_CONTAINER_CLASS} pb-20`}>
         <header className="mb-12 border-b border-zinc-200 pb-8">
-          <h1 className="text-4xl font-bold tracking-tight text-zinc-900 sm:text-5xl">
+          <h1 className="text-3xl md:text-5xl leading-[1.02] font-semibold tracking-tight text-zinc-900">
             {post.title}
           </h1>
           <div className="mt-6 flex flex-wrap justify-start gap-x-4 gap-y-2 text-left text-sm text-zinc-500">

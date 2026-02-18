@@ -23,6 +23,7 @@ import {
   getPostStatusClassName,
   getPostStatusLabel,
 } from "@/src/features/blog/model/blog-mappers";
+import { MAIN_CONTAINER_CLASS } from "@/src/shared/config/layout";
 import { appRoutes } from "@/src/shared/config/routes";
 
 import type { PostSummary } from "@workspace/shared/blog";
@@ -67,7 +68,7 @@ export function AdminBlogPage() {
   if (isCheckingAuth) {
     return (
       <main className="min-h-[calc(100svh-4rem)] bg-linear-to-b from-white via-slate-50 to-slate-100">
-        <div className="mx-auto w-full max-w-5xl px-4 py-12 text-sm text-slate-500 sm:px-6">
+        <div className={`${MAIN_CONTAINER_CLASS} py-12 text-sm text-slate-500`}>
           인증 상태를 확인하는 중...
         </div>
       </main>
@@ -76,7 +77,7 @@ export function AdminBlogPage() {
 
   return (
     <main className="min-h-[calc(100svh-4rem)] bg-linear-to-b from-white via-slate-50 to-slate-100">
-      <div className="mx-auto w-full max-w-5xl px-4 py-12 sm:px-6">
+      <div className={`${MAIN_CONTAINER_CLASS} py-12`}>
         <div className="mb-6 flex items-center justify-between gap-4">
           <div>
             <h1 className="text-2xl font-semibold text-slate-900">블로그 관리</h1>

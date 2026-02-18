@@ -31,6 +31,7 @@ import {
   uploadEditorImage,
 } from "@/src/features/blog/model/blog-queries";
 import { Toolbar } from "@/src/features/blog/ui/components/toolbar";
+import { MAIN_CONTAINER_CLASS } from "@/src/shared/config/layout";
 import { appRoutes } from "@/src/shared/config/routes";
 import { toErrorMessage } from "@/src/shared/lib/response";
 
@@ -184,7 +185,7 @@ export function EditorClient() {
   if (isCheckingAuth) {
     return (
       <main className="h-[calc(100svh-4rem)] overflow-hidden bg-linear-to-b from-white via-slate-50 to-slate-100">
-        <div className="mx-auto flex h-full w-full max-w-5xl items-center px-4 text-sm text-slate-500 sm:px-6">
+        <div className={`${MAIN_CONTAINER_CLASS} flex h-full items-center text-sm text-slate-500`}>
           인증 상태를 확인하는 중...
         </div>
       </main>
@@ -193,7 +194,7 @@ export function EditorClient() {
 
   return (
     <main className="h-[calc(100svh-4rem)] overflow-hidden bg-linear-to-b from-white via-slate-50 to-slate-100">
-      <div className="mx-auto flex h-full w-full max-w-5xl flex-col px-4 pt-8 sm:px-6">
+      <div className={`${MAIN_CONTAINER_CLASS} flex h-full flex-col pt-8`}>
         <section className="flex min-h-0 flex-1 flex-col gap-6 pb-8">
           <div className="border-b border-slate-200 pb-4">
             <Input
