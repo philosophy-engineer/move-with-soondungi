@@ -13,10 +13,11 @@ export async function HomePage() {
   return (
     <div className="min-h-svh bg-zinc-100">
       <HomeHeader />
-
-      <main className="mx-auto w-full max-w-[760px] px-4 pb-16 pt-8 sm:px-6">
+      <main className="pb-16">
         <HeroPlaceholder />
-        <PostFeed initialItems={initialFeed.items} initialNextCursor={initialFeed.nextCursor} />
+        <div className="mx-auto w-full max-w-230 px-4 pt-10 sm:px-6">
+          <PostFeed initialItems={initialFeed.items} initialNextCursor={initialFeed.nextCursor} />
+        </div>
       </main>
     </div>
   );

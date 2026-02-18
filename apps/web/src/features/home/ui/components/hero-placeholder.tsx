@@ -2,9 +2,9 @@ export function HeroPlaceholder() {
   return (
     <section
       aria-label="hero placeholder"
-      className="mb-10 flex h-[220px] items-center justify-center rounded-2xl bg-blue-500 text-white shadow-sm"
+      className="flex h-85 w-full items-center justify-center bg-blue-500 text-white shadow-sm sm:h-105"
     >
-      <span className="text-lg font-semibold tracking-wide sm:text-xl">HERO_PLACEHOLDER</span>
+      <span className="text-2xl font-semibold tracking-wide sm:text-3xl">HERO_PLACEHOLDER</span>
     </section>
   );
 }
