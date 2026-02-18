@@ -3,6 +3,7 @@ import { UploadedImage } from "../entities/uploaded-image.entity.js";
 
 export type UploadSessionRecord = {
   fileKey: string;
+  objectKey: string;
   filename: string;
   mimeType: string;
   size: number;
@@ -15,14 +16,16 @@ export type UploadSessionRecord = {
 export type UploadedImageRecord = {
   imageId: string;
   fileKey: string;
+  objectKey: string;
   mimeType: string;
-  bytes: ArrayBuffer;
+  bytes?: ArrayBuffer;
   createdAt: string;
 };
 
 export function toUploadSessionRecord(entity: UploadSession): UploadSessionRecord {
   return {
     fileKey: entity.fileKey,
+    objectKey: entity.objectKey,
     filename: entity.filename,
     mimeType: entity.mimeType,
     size: entity.size,
@@ -36,6 +39,7 @@ export function toUploadSessionRecord(entity: UploadSession): UploadSessionRecor
 export function toUploadSessionEntity(record: UploadSessionRecord): UploadSession {
   return new UploadSession({
     fileKey: record.fileKey,
+    objectKey: record.objectKey,
     filename: record.filename,
     mimeType: record.mimeType,
     size: record.size,
@@ -50,6 +54,7 @@ export function toUploadedImageRecord(entity: UploadedImage): UploadedImageRecor
   return {
     imageId: entity.imageId,
     fileKey: entity.fileKey,
+    objectKey: entity.objectKey,
     mimeType: entity.mimeType,
     bytes: entity.bytes,
     createdAt: entity.createdAt,
@@ -60,6 +65,7 @@ export function toUploadedImageEntity(record: UploadedImageRecord): UploadedImag
   return new UploadedImage({
     imageId: record.imageId,
     fileKey: record.fileKey,
+    objectKey: record.objectKey,
     mimeType: record.mimeType,
     bytes: record.bytes,
     createdAt: record.createdAt,

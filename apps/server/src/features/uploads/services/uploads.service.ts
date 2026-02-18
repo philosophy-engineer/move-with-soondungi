@@ -1,7 +1,6 @@
 import { randomUUID } from "node:crypto";
 
 import { Inject, Injectable } from "@nestjs/common";
-import { ConfigService } from "@nestjs/config";
 import {
   ALLOWED_IMAGE_MIME_TYPES,
   type AllowedImageMimeType,
@@ -14,30 +13,38 @@ import type {
   PresignUploadResponse,
 } from "@workspace/shared/upload";
 
-import { ENV_KEYS, type AppEnv } from "../../../common/config/env.types.js";
 import { throwBadRequest } from "../../../common/errors/error-response.js";
 import { UploadSession } from "../entities/upload-session.entity.js";
 import { UploadedImage } from "../entities/uploaded-image.entity.js";
 import { UPLOADS_REPOSITORY, type UploadsRepository } from "../repositories/uploads.repository.js";
+import { UploadsS3Repository } from "../repositories/uploads.s3.repository.js";
+
+const PRESIGNED_UPLOAD_EXPIRES_IN_SECONDS = 10 * 60;
+
+function sanitizeFilename(filename: string): string {
+  return filename.replace(/[^a-zA-Z0-9._-]/g, "_");
+}
 
 @Injectable()
 export class UploadsService {
   constructor(
     @Inject(UPLOADS_REPOSITORY)
     private readonly uploadsRepository: UploadsRepository,
-    private readonly configService: ConfigService<AppEnv, true>,
+    private readonly uploadsS3Repository: UploadsS3Repository,
   ) {}
 
-  createPresignedUpload(payload: PresignUploadRequest): PresignUploadResponse {
+  async createPresignedUpload(payload: PresignUploadRequest): Promise<PresignUploadResponse> {
     this.validateImageUploadPolicy(payload);
 
     const fileKey = `file_${randomUUID()}`;
     const completeToken = `token_${randomUUID()}`;
-    const expiresAtMs = Date.now() + 10 * 60 * 1000;
+    const objectKey = `uploads/${fileKey}_${sanitizeFilename(payload.filename)}`;
+    const expiresAtMs = Date.now() + PRESIGNED_UPLOAD_EXPIRES_IN_SECONDS * 1000;
     const expiresAt = new Date(expiresAtMs).toISOString();
 
     const session = new UploadSession({
       fileKey,
+      objectKey,
       filename: payload.filename,
       mimeType: payload.mimeType,
       size: payload.size,
@@ -49,96 +56,82 @@ export class UploadsService {
       this.uploadsRepository.saveSession(session);
     });
 
-    const uploadPath = `/api/mock/uploads/blob/${encodeURIComponent(fileKey)}?token=${encodeURIComponent(completeToken)}`;
+    const uploadUrl = await this.runS3(() =>
+      this.uploadsS3Repository.createPutObjectPresignedUrl({
+        objectKey,
+        contentType: payload.mimeType,
+        expiresInSeconds: PRESIGNED_UPLOAD_EXPIRES_IN_SECONDS,
+      }),
+    );
 
     return {
       fileKey,
-      uploadUrl: new URL(uploadPath, this.getServerPublicOrigin()).toString(),
+      uploadUrl,
       completeToken,
       expiresAt,
     };
   }
 
-  saveUploadBlob(payload: {
-    fileKey: string;
-    token: string;
-    data: ArrayBuffer;
-    contentType?: string;
-  }) {
-    this.runRepository(() => {
-      const session = this.uploadsRepository.findSessionByFileKey(payload.fileKey);
+  async completeUpload(payload: CompleteUploadRequest): Promise<CompleteUploadResponse> {
+    const session = this.runRepository(() => {
+      const found = this.uploadsRepository.findSessionByFileKey(payload.fileKey);
 
-      if (!session) {
+      if (!found) {
         throw new Error("업로드 세션을 찾을 수 없습니다.");
       }
 
-      if (session.completeToken !== payload.token) {
-        throw new Error("유효하지 않은 업로드 토큰입니다.");
-      }
-
-      if (session.expiresAtMs < Date.now()) {
-        throw new Error("업로드 세션이 만료되었습니다.");
-      }
-
-      const updatedSession = new UploadSession({
-        fileKey: session.fileKey,
-        filename: session.filename,
-        mimeType: session.mimeType,
-        size: session.size,
-        completeToken: session.completeToken,
-        expiresAtMs: session.expiresAtMs,
-        uploadedData: payload.data.slice(0),
-        uploadedMimeType: payload.contentType ?? session.mimeType,
-      });
-
-      this.uploadsRepository.saveSession(updatedSession);
-    });
-  }
-
-  completeUpload(payload: CompleteUploadRequest): CompleteUploadResponse {
-    return this.runRepository(() => {
-      const session = this.uploadsRepository.findSessionByFileKey(payload.fileKey);
-
-      if (!session) {
-        throw new Error("업로드 세션을 찾을 수 없습니다.");
-      }
-
-      if (session.completeToken !== payload.completeToken) {
+      if (found.completeToken !== payload.completeToken) {
         throw new Error("유효하지 않은 완료 토큰입니다.");
       }
 
-      if (!session.uploadedData) {
-        throw new Error("업로드된 파일이 없습니다.");
+      if (found.expiresAtMs < Date.now()) {
+        throw new Error("업로드 세션이 만료되었습니다.");
       }
 
-      const existingImageId = this.uploadsRepository.findImageIdByFileKey(payload.fileKey);
-      if (existingImageId) {
-        return {
-          imageId: existingImageId,
-          url: this.buildFileUrl(existingImageId),
-        };
-      }
+      return found;
+    });
 
-      const image = new UploadedImage({
-        imageId: `img_${randomUUID()}`,
-        fileKey: session.fileKey,
-        mimeType: session.uploadedMimeType ?? session.mimeType,
-        bytes: session.uploadedData,
-        createdAt: new Date().toISOString(),
-      });
+    const existingImageId = this.runRepository(() =>
+      this.uploadsRepository.findImageIdByFileKey(payload.fileKey),
+    );
 
-      this.uploadsRepository.saveImage(image);
-      this.uploadsRepository.saveImageLink(payload.fileKey, image.imageId);
+    if (existingImageId) {
+      const existingImage = this.runRepository(() =>
+        this.uploadsRepository.findImageById(existingImageId),
+      );
+      const objectKey = existingImage?.objectKey ?? session.objectKey;
 
       return {
-        imageId: image.imageId,
-        url: this.buildFileUrl(image.imageId),
+        imageId: existingImageId,
+        url: this.uploadsS3Repository.buildPublicObjectUrl(objectKey),
       };
-    });
-  }
+    }
 
-  getImageById(imageId: string): UploadedImage | undefined {
-    return this.uploadsRepository.findImageById(imageId);
+    const existsInStorage = await this.runS3(() =>
+      this.uploadsS3Repository.headObject(session.objectKey),
+    );
+
+    if (!existsInStorage) {
+      throwBadRequest("업로드된 파일이 없습니다.");
+    }
+
+    const image = new UploadedImage({
+      imageId: `img_${randomUUID()}`,
+      fileKey: session.fileKey,
+      objectKey: session.objectKey,
+      mimeType: session.mimeType,
+      createdAt: new Date().toISOString(),
+    });
+
+    this.runRepository(() => {
+      this.uploadsRepository.saveImage(image);
+      this.uploadsRepository.saveImageLink(payload.fileKey, image.imageId);
+    });
+
+    return {
+      imageId: image.imageId,
+      url: this.uploadsS3Repository.buildPublicObjectUrl(image.objectKey),
+    };
   }
 
   private validateImageUploadPolicy(payload: { mimeType: string; size: number }) {
@@ -151,17 +144,6 @@ export class UploadsService {
     }
   }
 
-  private buildFileUrl(imageId: string): string {
-    return new URL(
-      `/api/mock/uploads/file/${encodeURIComponent(imageId)}`,
-      this.getServerPublicOrigin(),
-    ).toString();
-  }
-
-  private getServerPublicOrigin(): string {
-    return this.configService.getOrThrow<string>(ENV_KEYS.SERVER_PUBLIC_ORIGIN);
-  }
-
   private runRepository<T>(runner: () => T): T {
     try {
       return runner();
@@ -171,6 +153,14 @@ export class UploadsService {
       }
 
       throwBadRequest("요청 처리 중 오류가 발생했습니다.");
+    }
+  }
+
+  private async runS3<T>(runner: () => Promise<T>): Promise<T> {
+    try {
+      return await runner();
+    } catch {
+      throwBadRequest("스토리지 처리 중 오류가 발생했습니다.");
     }
   }
 }

@@ -1,21 +1,24 @@
 type UploadedImageEntityParams = {
   imageId: string;
   fileKey: string;
+  objectKey: string;
   mimeType: string;
-  bytes: ArrayBuffer;
+  bytes?: ArrayBuffer;
   createdAt: string;
 };
 
 export class UploadedImage {
   readonly imageId: string;
   readonly fileKey: string;
+  readonly objectKey: string;
   readonly mimeType: string;
-  readonly bytes: ArrayBuffer;
+  readonly bytes?: ArrayBuffer;
   readonly createdAt: string;
 
   constructor(params: UploadedImageEntityParams) {
     this.imageId = params.imageId;
     this.fileKey = params.fileKey;
+    this.objectKey = params.objectKey;
     this.mimeType = params.mimeType;
     this.bytes = params.bytes;
     this.createdAt = params.createdAt;

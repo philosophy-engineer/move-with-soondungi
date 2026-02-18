@@ -1,5 +1,6 @@
 type UploadSessionEntityParams = {
   fileKey: string;
+  objectKey: string;
   filename: string;
   mimeType: string;
   size: number;
@@ -11,6 +12,7 @@ type UploadSessionEntityParams = {
 
 export class UploadSession {
   readonly fileKey: string;
+  readonly objectKey: string;
   readonly filename: string;
   readonly mimeType: string;
   readonly size: number;
@@ -21,6 +23,7 @@ export class UploadSession {
 
   constructor(params: UploadSessionEntityParams) {
     this.fileKey = params.fileKey;
+    this.objectKey = params.objectKey;
     this.filename = params.filename;
     this.mimeType = params.mimeType;
     this.size = params.size;
