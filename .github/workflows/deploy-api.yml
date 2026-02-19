@@ -98,14 +98,25 @@ jobs:
             exit 1
           fi
 
+          docker_cmd() { docker "$@"; }
+          if ! docker info >/dev/null 2>&1; then
+            if sudo -n docker info >/dev/null 2>&1; then
+              docker_cmd() { sudo docker "$@"; }
+            else
+              echo "Docker daemon access denied for user '$USER'."
+              echo "Add the user to docker group or allow passwordless sudo for docker."
+              exit 1
+            fi
+          fi
+
           PREVIOUS_IMAGE="$(cat .last_successful_image 2>/dev/null || true)"
           echo "$IMAGE_REF" > .last_attempted_image
 
-          echo "$GHCR_TOKEN" | docker login ghcr.io -u "$GHCR_USERNAME" --password-stdin
-          docker pull "$IMAGE_REF"
+          echo "$GHCR_TOKEN" | docker_cmd login ghcr.io -u "$GHCR_USERNAME" --password-stdin
+          docker_cmd pull "$IMAGE_REF"
 
-          API_IMAGE="$IMAGE_REF" API_PORT="$API_PORT" docker compose -f docker-compose.api.yml run --rm --no-deps api node dist/scripts/run-migrations.js
-          API_IMAGE="$IMAGE_REF" API_PORT="$API_PORT" docker compose -f docker-compose.api.yml up -d api
+          API_IMAGE="$IMAGE_REF" API_PORT="$API_PORT" docker_cmd compose -f docker-compose.api.yml run --rm --no-deps api node dist/scripts/run-migrations.js
+          API_IMAGE="$IMAGE_REF" API_PORT="$API_PORT" docker_cmd compose -f docker-compose.api.yml up -d api
 
           if curl -fsS --retry 10 --retry-delay 3 "http://127.0.0.1:${API_PORT}/healthz" >/dev/null; then
             echo "$IMAGE_REF" > .last_successful_image
@@ -116,7 +127,7 @@ jobs:
 
           if [ -n "$PREVIOUS_IMAGE" ]; then
             echo "Rolling back to $PREVIOUS_IMAGE"
-            API_IMAGE="$PREVIOUS_IMAGE" API_PORT="$API_PORT" docker compose -f docker-compose.api.yml up -d api
+            API_IMAGE="$PREVIOUS_IMAGE" API_PORT="$API_PORT" docker_cmd compose -f docker-compose.api.yml up -d api
             curl -fsS --retry 10 --retry-delay 3 "http://127.0.0.1:${API_PORT}/healthz" >/dev/null
           fi
 
@@ -152,10 +163,21 @@ jobs:
             exit 1
           fi
 
-          echo "$GHCR_TOKEN" | docker login ghcr.io -u "$GHCR_USERNAME" --password-stdin
-          docker pull "$IMAGE_REF"
+          docker_cmd() { docker "$@"; }
+          if ! docker info >/dev/null 2>&1; then
+            if sudo -n docker info >/dev/null 2>&1; then
+              docker_cmd() { sudo docker "$@"; }
+            else
+              echo "Docker daemon access denied for user '$USER'."
+              echo "Add the user to docker group or allow passwordless sudo for docker."
+              exit 1
+            fi
+          fi
 
-          API_IMAGE="$IMAGE_REF" API_PORT="$API_PORT" docker compose -f docker-compose.api.yml up -d api
+          echo "$GHCR_TOKEN" | docker_cmd login ghcr.io -u "$GHCR_USERNAME" --password-stdin
+          docker_cmd pull "$IMAGE_REF"
+
+          API_IMAGE="$IMAGE_REF" API_PORT="$API_PORT" docker_cmd compose -f docker-compose.api.yml up -d api
           curl -fsS --retry 10 --retry-delay 3 "http://127.0.0.1:${API_PORT}/healthz" >/dev/null
 
           echo "$IMAGE_REF" > .last_successful_image
