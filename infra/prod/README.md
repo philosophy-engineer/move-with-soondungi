@@ -29,6 +29,11 @@ cp infra/prod/.env.api.template /opt/soondungi/api/.env.api
 # then fill all placeholders
 ```
 
+If your PostgreSQL only allows TLS/SSL connections, set:
+
+- `DB_SSL=true`
+- `DB_SSL_REJECT_UNAUTHORIZED=false` (or keep `true` when CA trust is configured)
+
 ## 4) Nginx host config
 
 Use template: `infra/prod/nginx/origin.conf.template`
