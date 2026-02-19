@@ -37,3 +37,6 @@ npm-debug.log*
 # Misc
 .DS_Store
 *.pem
+
+apps/server/.env.production
+infra/prod/.env.api
