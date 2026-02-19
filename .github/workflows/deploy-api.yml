@@ -115,11 +115,17 @@ jobs:
           echo "$GHCR_TOKEN" | docker_cmd login ghcr.io -u "$GHCR_USERNAME" --password-stdin
           docker_cmd pull "$IMAGE_REF"
 
-          API_IMAGE="$IMAGE_REF" API_PORT="$API_PORT" docker_cmd compose -f docker-compose.api.yml run --rm --no-deps api node dist/scripts/run-migrations.js
-          API_IMAGE="$IMAGE_REF" API_PORT="$API_PORT" docker_cmd compose -f docker-compose.api.yml up -d api
+          write_compose_env() {
+            printf 'API_IMAGE=%s\nAPI_PORT=%s\n' "$1" "$API_PORT" > .deploy.compose.env
+          }
+
+          write_compose_env "$IMAGE_REF"
+          docker_cmd compose --env-file .deploy.compose.env -f docker-compose.api.yml run --rm --no-deps api node dist/scripts/run-migrations.js
+          docker_cmd compose --env-file .deploy.compose.env -f docker-compose.api.yml up -d api
 
           if curl -fsS --retry 10 --retry-delay 3 "http://127.0.0.1:${API_PORT}/healthz" >/dev/null; then
             echo "$IMAGE_REF" > .last_successful_image
+            rm -f .deploy.compose.env
             exit 0
           fi
 
@@ -127,10 +133,12 @@ jobs:
 
           if [ -n "$PREVIOUS_IMAGE" ]; then
             echo "Rolling back to $PREVIOUS_IMAGE"
-            API_IMAGE="$PREVIOUS_IMAGE" API_PORT="$API_PORT" docker_cmd compose -f docker-compose.api.yml up -d api
+            write_compose_env "$PREVIOUS_IMAGE"
+            docker_cmd compose --env-file .deploy.compose.env -f docker-compose.api.yml up -d api
             curl -fsS --retry 10 --retry-delay 3 "http://127.0.0.1:${API_PORT}/healthz" >/dev/null
           fi
 
+          rm -f .deploy.compose.env
           exit 1
           EOF
 
@@ -177,8 +185,10 @@ jobs:
           echo "$GHCR_TOKEN" | docker_cmd login ghcr.io -u "$GHCR_USERNAME" --password-stdin
           docker_cmd pull "$IMAGE_REF"
 
-          API_IMAGE="$IMAGE_REF" API_PORT="$API_PORT" docker_cmd compose -f docker-compose.api.yml up -d api
+          printf 'API_IMAGE=%s\nAPI_PORT=%s\n' "$IMAGE_REF" "$API_PORT" > .deploy.compose.env
+          docker_cmd compose --env-file .deploy.compose.env -f docker-compose.api.yml up -d api
           curl -fsS --retry 10 --retry-delay 3 "http://127.0.0.1:${API_PORT}/healthz" >/dev/null
+          rm -f .deploy.compose.env
 
           echo "$IMAGE_REF" > .last_successful_image
           EOF
