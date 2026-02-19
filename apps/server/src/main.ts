@@ -13,7 +13,8 @@ async function bootstrap() {
 
   const port = configService.getOrThrow<number>(ENV_KEYS.PORT);
   // TODO: 필요 시 WEB_ORIGIN을 콤마 구분 다중 origin으로 확장
-  const webOrigin = configService.getOrThrow<string>(ENV_KEYS.WEB_ORIGIN);
+  const rawWebOrigin = configService.getOrThrow<string>(ENV_KEYS.WEB_ORIGIN);
+  const webOrigin = new URL(rawWebOrigin).origin;
 
   app.enableCors({
     origin: webOrigin,
