@@ -116,6 +116,25 @@ jobs:
             wait "$command_pid"
           }
 
+          wait_for_health() {
+            local url="$1"
+            local max_attempts="${2:-20}"
+            local delay_seconds="${3:-3}"
+            local i
+
+            for i in $(seq 1 "$max_attempts"); do
+              if curl -fsS --connect-timeout 2 --max-time 5 "$url" >/dev/null; then
+                log "Health check passed (${i}/${max_attempts})"
+                return 0
+              fi
+
+              log "Health check not ready (${i}/${max_attempts})"
+              sleep "$delay_seconds"
+            done
+
+            return 1
+          }
+
           cd "$DEPLOY_PATH"
 
           if [ ! -f .env.api ]; then
@@ -159,21 +178,21 @@ jobs:
           docker_cmd compose --env-file .deploy.compose.env -f docker-compose.api.yml ps api || true
 
           log "Health check: http://127.0.0.1:${API_PORT}/healthz"
-          if curl -fsS --retry 10 --retry-delay 3 --connect-timeout 2 --max-time 5 "http://127.0.0.1:${API_PORT}/healthz" >/dev/null; then
-            log "Health check passed"
+          if wait_for_health "http://127.0.0.1:${API_PORT}/healthz" 20 3; then
             echo "$IMAGE_REF" > .last_successful_image
             rm -f .deploy.compose.env
             exit 0
           fi
 
           echo "Health check failed for $IMAGE_REF"
+          docker_cmd compose --env-file .deploy.compose.env -f docker-compose.api.yml ps api || true
           docker_cmd compose --env-file .deploy.compose.env -f docker-compose.api.yml logs --tail=200 api || true
 
           if [ -n "$PREVIOUS_IMAGE" ]; then
             echo "Rolling back to $PREVIOUS_IMAGE"
             write_compose_env "$PREVIOUS_IMAGE"
             docker_cmd compose --env-file .deploy.compose.env -f docker-compose.api.yml up -d api
-            curl -fsS --retry 10 --retry-delay 3 --connect-timeout 2 --max-time 5 "http://127.0.0.1:${API_PORT}/healthz" >/dev/null
+            wait_for_health "http://127.0.0.1:${API_PORT}/healthz" 20 3
           fi
 
           rm -f .deploy.compose.env
@@ -206,6 +225,25 @@ jobs:
             echo "[$(date '+%Y-%m-%d %H:%M:%S')] $*"
           }
 
+          wait_for_health() {
+            local url="$1"
+            local max_attempts="${2:-20}"
+            local delay_seconds="${3:-3}"
+            local i
+
+            for i in $(seq 1 "$max_attempts"); do
+              if curl -fsS --connect-timeout 2 --max-time 5 "$url" >/dev/null; then
+                log "Health check passed (${i}/${max_attempts})"
+                return 0
+              fi
+
+              log "Health check not ready (${i}/${max_attempts})"
+              sleep "$delay_seconds"
+            done
+
+            return 1
+          }
+
           cd "$DEPLOY_PATH"
 
           if [ ! -f .env.api ]; then
@@ -233,8 +271,7 @@ jobs:
           log "Start api container"
           docker_cmd compose --env-file .deploy.compose.env -f docker-compose.api.yml up -d api
           log "Health check: http://127.0.0.1:${API_PORT}/healthz"
-          curl -fsS --retry 10 --retry-delay 3 --connect-timeout 2 --max-time 5 "http://127.0.0.1:${API_PORT}/healthz" >/dev/null
-          log "Health check passed"
+          wait_for_health "http://127.0.0.1:${API_PORT}/healthz" 20 3
           rm -f .deploy.compose.env
 
           echo "$IMAGE_REF" > .last_successful_image
