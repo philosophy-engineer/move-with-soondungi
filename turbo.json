@@ -4,6 +4,7 @@
   "globalEnv": [
     "NODE_ENV",
     "NEXT_PUBLIC_API_BASE_URL",
+    "API_ORIGIN_URL",
     "PORT",
     "SERVER_PUBLIC_ORIGIN",
     "WEB_ORIGIN",
