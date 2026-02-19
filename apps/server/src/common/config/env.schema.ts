@@ -36,6 +36,33 @@ const booleanString = (key: string) =>
     return z.NEVER;
   });
 
+const optionalBooleanString = (key: string, defaultValue: boolean) =>
+  z
+    .preprocess(
+      (value) => (typeof value === "string" ? value.trim() : undefined),
+      z.string().optional(),
+    )
+    .transform((value, context) => {
+      if (value === undefined || value.length === 0) {
+        return defaultValue;
+      }
+
+      if (value === "true") {
+        return true;
+      }
+
+      if (value === "false") {
+        return false;
+      }
+
+      context.addIssue({
+        code: "custom",
+        message: `${key} 환경변수는 true 또는 false 여야 합니다.`,
+      });
+
+      return z.NEVER;
+    });
+
 const portSchema = requiredString("PORT")
   .transform((value) => Number(value))
   .refine((value) => Number.isInteger(value) && value > 0, "PORT 환경변수는 양의 정수여야 합니다.");
@@ -65,6 +92,8 @@ export const envSchema = z.looseObject({
   DB_USER: requiredString("DB_USER"),
   DB_PASSWORD: requiredString("DB_PASSWORD"),
   DB_NAME: requiredString("DB_NAME"),
+  DB_SSL: optionalBooleanString("DB_SSL", false),
+  DB_SSL_REJECT_UNAUTHORIZED: optionalBooleanString("DB_SSL_REJECT_UNAUTHORIZED", true),
   JWT_SECRET: requiredString("JWT_SECRET"),
   AUTH_ADMIN_LOGIN_ID: requiredString("AUTH_ADMIN_LOGIN_ID"),
   AUTH_ADMIN_PASSWORD: requiredString("AUTH_ADMIN_PASSWORD"),

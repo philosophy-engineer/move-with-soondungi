@@ -16,6 +16,8 @@ export const TYPEORM_ENTITIES = [
 ] as const;
 
 export function createTypeOrmDataSourceOptions(env: AppEnv): DataSourceOptions {
+  const ssl = env.DB_SSL ? { rejectUnauthorized: env.DB_SSL_REJECT_UNAUTHORIZED } : false;
+
   return {
     type: "postgres",
     host: env.DB_HOST,
@@ -23,6 +25,7 @@ export function createTypeOrmDataSourceOptions(env: AppEnv): DataSourceOptions {
     username: env.DB_USER,
     password: env.DB_PASSWORD,
     database: env.DB_NAME,
+    ssl,
     entities: [...TYPEORM_ENTITIES],
     synchronize: false,
     migrationsRun: false,
@@ -49,6 +52,8 @@ export function createTypeOrmOptions(
     DB_USER: configService.getOrThrow(ENV_KEYS.DB_USER),
     DB_PASSWORD: configService.getOrThrow(ENV_KEYS.DB_PASSWORD),
     DB_NAME: configService.getOrThrow(ENV_KEYS.DB_NAME),
+    DB_SSL: configService.getOrThrow(ENV_KEYS.DB_SSL),
+    DB_SSL_REJECT_UNAUTHORIZED: configService.getOrThrow(ENV_KEYS.DB_SSL_REJECT_UNAUTHORIZED),
     JWT_SECRET: configService.getOrThrow(ENV_KEYS.JWT_SECRET),
     AUTH_ADMIN_LOGIN_ID: configService.getOrThrow(ENV_KEYS.AUTH_ADMIN_LOGIN_ID),
     AUTH_ADMIN_PASSWORD: configService.getOrThrow(ENV_KEYS.AUTH_ADMIN_PASSWORD),
