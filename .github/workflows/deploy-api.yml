@@ -95,6 +95,16 @@ jobs:
             echo "[$(date '+%Y-%m-%d %H:%M:%S')] $*"
           }
 
+          run_with_timeout() {
+            local seconds="$1"
+            shift
+            if command -v timeout >/dev/null 2>&1; then
+              timeout "$seconds" "$@"
+            else
+              "$@"
+            fi
+          }
+
           cd "$DEPLOY_PATH"
 
           if [ ! -f .env.api ]; then
@@ -127,7 +137,12 @@ jobs:
 
           write_compose_env "$IMAGE_REF"
           log "Run migrations"
-          docker_cmd compose --env-file .deploy.compose.env -f docker-compose.api.yml run --rm --no-deps api node dist/scripts/run-migrations.js
+          if ! run_with_timeout 180 docker_cmd compose --env-file .deploy.compose.env -f docker-compose.api.yml run -T --rm --no-deps api node dist/scripts/run-migrations.js; then
+            echo "Migration command did not complete within 180s or failed."
+            docker_cmd compose --env-file .deploy.compose.env -f docker-compose.api.yml logs --tail=200 api || true
+            rm -f .deploy.compose.env
+            exit 1
+          fi
           log "Start api container"
           docker_cmd compose --env-file .deploy.compose.env -f docker-compose.api.yml up -d api
           docker_cmd compose --env-file .deploy.compose.env -f docker-compose.api.yml ps api || true
