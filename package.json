@@ -7,7 +7,7 @@
     "dev": "turbo dev",
     "lint": "turbo lint",
     "format": "prettier --write \"**/*.{ts,tsx,md}\"",
-    "prepare": "lefthook install"
+    "prepare": "node -e \"const { spawnSync } = require('node:child_process'); const hasGit = spawnSync('git', ['--version'], { stdio: 'ignore' }).status === 0; if (!hasGit) { console.log('Skipping lefthook install: git not found'); process.exit(0); } const inRepo = spawnSync('git', ['rev-parse', '--is-inside-work-tree'], { stdio: 'ignore' }).status === 0; if (!inRepo) { console.log('Skipping lefthook install: not a git repository'); process.exit(0); } const result = spawnSync('lefthook', ['install'], { stdio: 'inherit', shell: process.platform === 'win32' }); process.exit(result.status ?? 1);\""
   },
   "lint-staged": {
     "*": [
